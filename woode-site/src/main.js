@@ -13,6 +13,7 @@ gsap.registerPlugin(
 
 let smoother;
 let homeCtx;
+let productPageCtx;
 let productsCtx;
 let homeAbortController;
 
@@ -104,6 +105,7 @@ function initHomeAnimations(container) {
   const bedroomLink = document.getElementById("bedroom_link");
   const collectionsLink = document.getElementById("collections_link");
   const searchLink = document.getElementById("search_link");
+  const cartLink = document.getElementById("cart_link");
 
   const categoryMenus = [
     { link: livingLink, target: "#menu_living" },
@@ -111,7 +113,10 @@ function initHomeAnimations(container) {
     { link: bedroomLink, target: "#menu_bedroom" },
     { link: collectionsLink, target: "#menu_collections" },
     { link: searchLink, target: "#search_tab" },
+    { link: cartLink, target: "#cart_tab" },
   ];
+
+  const cartTarget = document.getElementById("cart_tab");
 
   let activeTarget = null;
   let isAnimating = false;
@@ -237,22 +242,83 @@ function initHomeAnimations(container) {
       });
     }
 
+    const cartTargetCloseBtn = document.getElementById("cart_close_btn");
     categoryMenus.forEach(({ link, target }) => {
       if (!link) return;
 
-      link.addEventListener(
-        "click",
-        () => {
-          if (isAnimating) return;
+      link.addEventListener("click", () => {
+        if (isAnimating) return;
 
-          const targetOverlay = document.querySelector(target);
+        const targetOverlay = document.querySelector(target);
+
+        // --- 1. ISOLATED CART LOGIC (X-Axis) ---
+        if (target === "#cart_tab") {
+          isAnimating = true;
+
           const targetItems = targetOverlay.querySelectorAll(
-            ".product-categories h3, .product-categories li, .search-item",
+            "h2, .cart-tab-line, .investment-counter, .pieces-counter, .contact-concierge-btn",
           );
 
-          if (activeTarget === target) {
-            isAnimating = true;
+          const tl = gsap.timeline({
+            onComplete: () => {
+              isAnimating = false;
+            },
+          });
 
+          // NEW LOGIC: Close any open Y-axis menu before sliding the cart in
+          if (activeTarget) {
+            const oldOverlay = document.querySelector(activeTarget);
+            const oldItems = oldOverlay.querySelectorAll(
+              ".product-categories h3, .product-categories li, .search-item",
+            );
+
+            tl.to(oldItems, {
+              y: -10,
+              opacity: 0,
+              duration: 0.3,
+              stagger: 0.02,
+              ease: "power2.in",
+            }).set(oldOverlay, { y: "-100%" });
+
+            activeTarget = null; // Clear the active target since the cart is now open
+          }
+
+          gsap.set(targetItems, { opacity: 0, y: 15 });
+
+          tl.to(
+            targetOverlay,
+            {
+              x: "0%", // Slide in from right
+              duration: 0.8,
+              ease: "expo.inOut",
+            },
+            activeTarget ? "<0.1" : undefined,
+          )
+            .to(
+              // Overlap the slide slightly if closing a menu
+              [targetItems, cartTargetCloseBtn],
+              {
+                opacity: 1,
+                y: 0,
+                duration: 0.6,
+                stagger: 0.04,
+                ease: "power3.out",
+              },
+              "-=0.3",
+            )
+            .to(
+              ".cart-tab-overlay",
+              {
+                opacity: 1,
+                pointerEvents: "auto",
+                duration: 0.8,
+                ease: "expo.inOut",
+              },
+              0,
+            );
+
+          cartTargetCloseBtn.addEventListener("click", () => {
+            console.log("clickado");
             const tl = gsap.timeline({
               onComplete: () => {
                 activeTarget = null;
@@ -260,83 +326,121 @@ function initHomeAnimations(container) {
               },
             });
 
-            tl.to(targetItems, {
+            tl.to([cartTargetCloseBtn, targetItems], {
               y: -10,
               opacity: 0,
               duration: 0.4,
               stagger: -0.02,
               ease: "power2.in",
-            }).to(targetOverlay, {
-              y: "-100%",
-              duration: 0.8,
-              ease: "expo.inOut",
-            });
-          } else {
-            isAnimating = true;
-
-            if (activeTarget) {
-              const oldOverlay = document.querySelector(activeTarget);
-              const oldItems = oldOverlay.querySelectorAll(
-                ".product-categories h3, .product-categories li, .search-item",
-              );
-
-              const tl = gsap.timeline({
-                onComplete: () => {
-                  activeTarget = target;
-                  isAnimating = false;
-                },
-              });
-
-              tl.to(oldItems, {
-                y: -10,
-                opacity: 0,
-                duration: 0.3,
-                stagger: 0.02,
-                ease: "power2.in",
-              })
-                .set(oldOverlay, { y: "-100%" })
-                .set(targetOverlay, { y: "0%" })
-                .fromTo(
-                  targetItems,
-                  { opacity: 0, y: 15 },
-                  {
-                    opacity: 1,
-                    y: 0,
-                    duration: 0.6,
-                    stagger: 0.03,
-                    ease: "power3.out",
-                  },
-                );
-            } else {
-              const tl = gsap.timeline({
-                onComplete: () => {
-                  activeTarget = target;
-                  isAnimating = false;
-                },
-              });
-
-              gsap.set(targetItems, { opacity: 0, y: 15 });
-
-              tl.to(targetOverlay, {
-                y: "0%",
+            })
+              .to(targetOverlay, {
+                x: "100%",
                 duration: 0.8,
                 ease: "expo.inOut",
-              }).to(
-                targetItems,
+              })
+              .to(
+                ".cart-tab-overlay",
                 {
-                  opacity: 1,
-                  y: 0,
-                  duration: 0.6,
-                  stagger: 0.04,
-                  ease: "power3.out",
+                  opacity: 0,
+                  pointerEvents: "none",
+                  duration: 0.8,
+                  ease: "expo.inOut",
                 },
-                "-=0.3",
+                0,
               );
-            }
+          });
+          return; // Stop execution so it doesn't run the Y-axis logic below
+        }
+
+        // --- 2. STANDARD MENU LOGIC (Y-Axis) ---
+        const targetItems = targetOverlay.querySelectorAll(
+          ".product-categories h3, .product-categories li, .search-item",
+        );
+
+        if (activeTarget === target) {
+          isAnimating = true;
+
+          const tl = gsap.timeline({
+            onComplete: () => {
+              activeTarget = null;
+              isAnimating = false;
+            },
+          });
+
+          tl.to(targetItems, {
+            y: -10,
+            opacity: 0,
+            duration: 0.4,
+            stagger: -0.02,
+            ease: "power2.in",
+          }).to(targetOverlay, {
+            y: "-100%",
+            duration: 0.8,
+            ease: "expo.inOut",
+          });
+        } else {
+          isAnimating = true;
+
+          if (activeTarget) {
+            const oldOverlay = document.querySelector(activeTarget);
+            const oldItems = oldOverlay.querySelectorAll(
+              ".product-categories h3, .product-categories li, .search-item",
+            );
+
+            const tl = gsap.timeline({
+              onComplete: () => {
+                activeTarget = target;
+                isAnimating = false;
+              },
+            });
+
+            tl.to(oldItems, {
+              y: -10,
+              opacity: 0,
+              duration: 0.3,
+              stagger: 0.02,
+              ease: "power2.in",
+            }).set(oldOverlay, { y: "-100%" });
+
+            tl.set(targetOverlay, { y: "0%" }).fromTo(
+              targetItems,
+              { opacity: 0, y: 15 },
+              {
+                opacity: 1,
+                y: 0,
+                duration: 0.6,
+                stagger: 0.03,
+                ease: "power3.out",
+              },
+            );
+          } else {
+            const tl = gsap.timeline({
+              onComplete: () => {
+                activeTarget = target;
+                isAnimating = false;
+              },
+            });
+
+            gsap.set(targetItems, { opacity: 0, y: 15 });
+
+            tl.to(targetOverlay, {
+              y: "0%",
+              duration: 0.8,
+              ease: "expo.inOut",
+            }).to(
+              targetItems,
+              {
+                opacity: 1,
+                y: 0,
+                duration: 0.6,
+                stagger: 0.04,
+                ease: "power3.out",
+              },
+              "-=0.3",
+            );
           }
-        },
-        { signal },
-      );
+        }
+      });
     });
 
     headerLinks.forEach((link) => {
@@ -366,10 +470,67 @@ function initHomeAnimations(container) {
     });
   }, container);
 }
+
 //entendi, mas devo pesquisar.
 function killHome() {
   if (homeCtx) homeCtx.revert();
   if (homeAbortController) homeAbortController.abort();
+}
+
+//eu que fiz :)
+function initProductPageAnimations(container) {
+  productPageCtx = gsap.context(() => {
+    let productPhotosTl = gsap.timeline({
+      scrollTrigger: {
+        trigger: ".product-details",
+        start: "center center",
+        end: "+=2700",
+        pin: true,
+        scrub: true,
+        onEnter() {
+          gsap.to("header", { y: "-100%" });
+          gsap.to(".header-background", { y: "-100%" });
+        },
+        onEnterBack() {
+          gsap.to("header", { y: "-100%" });
+          gsap.to(".header-background", { y: "-100%" });
+        },
+        onLeave() {
+          gsap.to("header", { y: "0%" });
+          gsap.to(".header-background", { y: "0%" });
+        },
+        onLeaveBack() {
+          gsap.to("header", { y: "0%" });
+          gsap.to(".header-background", { y: "0%" });
+        },
+      },
+    });
+
+    productPhotosTl.to(".product-details-photos-container", {
+      y: window.innerHeight * -1 - 20,
+      ease: "none",
+    });
+
+    productPhotosTl.to(".product-details-photos-container", {
+      y: window.innerHeight * -2 - 40,
+      ease: "none",
+    });
+
+    productPhotosTl.to(".product-details-photos-container", {
+      y: window.innerHeight * -3 - 60,
+      ease: "none",
+    });
+
+    productPhotosTl.to(".product-details-photos-container", {
+      y: window.innerHeight * -4 - 80,
+      ease: "none",
+    });
+  });
+}
+
+//eu que fiz :)
+function killProductPage() {
+  if (productPageCtx) productPageCtx.revert();
 }
 
 //entendi, mas não em detalhes.
@@ -491,11 +652,13 @@ barba.init({
 
         initSmoother(data.next.container);
         initHomeAnimations(data.next.container);
+        initProductPageAnimations(data.next.container);
 
         setTimeout(() => ScrollTrigger.refresh(), 600);
       },
       beforeLeave() {
         killHome();
+        killProductPage();
       },
     },
     {
@@ -514,6 +677,8 @@ barba.init({
       },
       beforeLeave() {
         killProductsCategory();
+      },
+      afterLeave() {
         gsap.set("header", { opacity: 1, pointerEvents: "auto" });
         gsap.set("footer", { opacity: 1, pointerEvents: "auto" });
       },

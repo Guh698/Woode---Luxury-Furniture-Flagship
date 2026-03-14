@@ -199,6 +199,95 @@ header a {
   opacity: 0;
 }
 
+.cart-tab-container {
+  position: fixed;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(4, 1fr);
+  grid-template-areas:
+    "title              title              .     "
+    ".                  .                  .     "
+    "line               line               line  "
+    "investment         .                  pieces";
+  gap: 2rem;
+  padding: 2rem;
+  padding: 2rem;
+  top: 0;
+  right: 0;
+  width: 50%;
+  height: 100dvh;
+  background-color: var(--dark-color);
+  transform: translateX(100%);
+  z-index: 100;
+  color: var(--light-color);
+}
+
+.cart-tab-overlay {
+  position: fixed;
+  width: 100%;
+  height: 100dvh;
+  background-color: #0000009d;
+  z-index: 50;
+  pointer-events: none;
+  opacity: 0;
+}
+
+.cart-tab-close-btn {
+  position: fixed;
+  top: 50%;
+  right: calc(50% + 2rem);
+  transform: translateY(-50%);
+  color: var(--light-color);
+  background-color: transparent;
+  cursor: pointer;
+  z-index: 100;
+  opacity: 0;
+  transform: translateY(15px);
+}
+
+.cart-tab-container h2 {
+  grid-area: title;
+  font-family: var(--destac-font-family);
+  text-transform: uppercase;
+  font-weight: var(--extra-light-weight-font);
+  font-size: 3.7rem;
+  color: var(--light-color);
+}
+
+.cart-tab-line {
+  grid-area: line;
+  position: absolute;
+  display: flex;
+  align-self: flex-end;
+  left: -2rem;
+  width: calc(100% + 4rem);
+  height: 0.23rem;
+  background-color: var(--light-color);
+}
+
+.investment-counter {
+  grid-area: investment;
+  font-family: var(--default-font-family);
+  font-size: 1.6rem;
+}
+
+.pieces-counter {
+  grid-area: pieces;
+  font-family: var(--default-font-family);
+  font-size: 1.6rem;
+}
+
+.cart-tab-container button {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  font-size: 3.7rem;
+  font-weight: var(--extra-light-weight-font);
+  padding: 1.7rem 0;
+  border-top: 0.23rem solid var(--light-color);
+  cursor: pointer;
+}
+
 .hero {
   position: relative;
   display: flex;
@@ -439,10 +528,10 @@ button {
   grid-template-columns: repeat(5, 1fr);
   grid-template-rows: repeat(4, 1fr);
   grid-template-areas:
-    "title       title       title       title       ."
-    ".       .       .       .       ."
-    "price       materials       .       description    description"
-    ".       .       .       .       .";
+    "title       title       title       title          ."
+    ".           .           .           .              ."
+    "price       materials   .           description    description"
+    ".           .           .           .              .";
   gap: 2rem;
   padding: 2rem;
   height: 100vh;
@@ -456,7 +545,6 @@ button {
 
 .product-page-hero h1 {
   display: flex;
-  align-self: flex-end;
   font-size: 11rem;
   font-family: var(--destac-font-family);
   text-transform: uppercase;
@@ -496,8 +584,33 @@ button {
   background-color: var(--dark-color);
 }
 
+.grid {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100dvh;
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  grid-template-rows: repeat(4, 1fr);
+  gap: 2rem;
+  padding: 2rem;
+  overflow: hidden;
+  background-color: #000;
+  opacity: 0;
+  z-index: 100000;
+  pointer-events: none;
+}
+
+.square {
+  width: 100%;
+  height: 100%;
+  background-color: #fff;
+  opacity: 1;
+}
+
 .product-details {
-  height: 115vh;
+  height: 100dvh;
   display: grid;
   grid-template-columns: repeat(5, 1fr);
   grid-template-rows: repeat(4, 1fr);
@@ -505,7 +618,7 @@ button {
     "photos       photos       .       description       description"
     "photos       photos       .       description       description"
     "photos       photos       .       button            ."
-    ".            .            .       .                 .";
+    "photos       photos       .       .                 .";
   gap: 2rem;
   padding: 2rem;
   font-family: var(--default-font-family);
@@ -520,7 +633,6 @@ button {
   display: flex;
   flex-direction: column;
   gap: 2rem;
-  overflow: hidden;
 }
 
 .product-details-photos-container .photo {
@@ -546,7 +658,7 @@ button {
 }
 
 .continue-curating {
-  height: 117vh;
+  height: 120vh;
   display: grid;
   grid-template-columns: repeat(5, 1fr);
   grid-template-rows: repeat(4, 1fr);
@@ -557,7 +669,6 @@ button {
     "recommendeds       recommendeds       recommendeds       recommendeds       recommendeds";
   gap: 2rem;
   padding: 2rem;
-  margin-bottom: 10rem;
 }
 
 .continue-curating h2 {
@@ -638,9 +749,14 @@ h1.products-category-title {
 
 footer {
   position: relative;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+  grid-template-areas:
+    ".                  .                  .                  .                  ."
+    "list1              list2              title              title              title"
+    "copy               .                  .                  .                  .";
+  gap: 2rem;
   padding: 2rem;
   height: 70vh;
   background-color: var(--dark-color);
@@ -648,6 +764,10 @@ footer {
 }
 
 footer h2 {
+  grid-area: title;
+  display: flex;
+  justify-self: flex-end;
+  line-height: 13rem;
   font-weight: var(--extra-light-weight-font);
   font-family: var(--destac-font-family);
   font-size: 17rem;
@@ -664,11 +784,19 @@ footer ul {
   gap: 3rem;
 }
 
+.footer-list1 {
+  grid-area: list1;
+}
+
+.footer-list2 {
+  grid-area: list2;
+}
+
 footer span {
-  position: absolute;
+  grid-area: copy;
+  display: flex;
+  align-self: flex-end;
   text-transform: uppercase;
-  bottom: 2rem;
-  left: 2rem;
 }
 
 .transition {
