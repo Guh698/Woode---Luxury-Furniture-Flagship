@@ -81,6 +81,7 @@ function initSmoother(contentEl) {
     content: contentEl,
     smooth: 1,
     effects: true,
+    smoothTouch: 0.1,
   });
 }
 
@@ -385,51 +386,56 @@ function initProductPageAnimations(container) {
   productPageCtx = gsap.context(() => {
     const globalHeader = document.querySelector("header");
     const globalHeaderBg = document.querySelector(".header-background");
+    ScrollTrigger.matchMedia({
+      "(min-width: 1024px)": function () {
+        let productPhotosTl = gsap.timeline({
+          scrollTrigger: {
+            trigger: ".product-details",
+            start: "center center",
+            end: "+=2700",
+            pin: true,
+            scrub: true,
+            onEnter() {
+              gsap.to(globalHeader, { y: "-100%" });
+              gsap.to(globalHeaderBg, { y: "-100%" });
+            },
+            onEnterBack() {
+              gsap.to(globalHeader, { y: "-100%" });
+              gsap.to(globalHeaderBg, { y: "-100%" });
+            },
+            onLeave() {
+              gsap.to(globalHeader, { y: "0%" });
+              gsap.to(globalHeaderBg, { y: "0%" });
+            },
+            onLeaveBack() {
+              gsap.to(globalHeader, { y: "0%" });
+              gsap.to(globalHeaderBg, { y: "0%" });
+            },
+          },
+        });
 
-    let productPhotosTl = gsap.timeline({
-      scrollTrigger: {
-        trigger: ".product-details",
-        start: "center center",
-        end: "+=2700",
-        pin: true,
-        scrub: true,
-        onEnter() {
-          gsap.to(globalHeader, { y: "-100%" });
-          gsap.to(globalHeaderBg, { y: "-100%" });
-        },
-        onEnterBack() {
-          gsap.to(globalHeader, { y: "-100%" });
-          gsap.to(globalHeaderBg, { y: "-100%" });
-        },
-        onLeave() {
-          gsap.to(globalHeader, { y: "0%" });
-          gsap.to(globalHeaderBg, { y: "0%" });
-        },
-        onLeaveBack() {
-          gsap.to(globalHeader, { y: "0%" });
-          gsap.to(globalHeaderBg, { y: "0%" });
-        },
+        productPhotosTl.to(".product-details-photos-container", {
+          y: window.innerHeight * -1 - 20,
+          ease: "none",
+        });
+
+        productPhotosTl.to(".product-details-photos-container", {
+          y: window.innerHeight * -2 - 40,
+          ease: "none",
+        });
+
+        productPhotosTl.to(".product-details-photos-container", {
+          y: window.innerHeight * -3 - 60,
+          ease: "none",
+        });
+
+        productPhotosTl.to(".product-details-photos-container", {
+          y: window.innerHeight * -4 - 80,
+          ease: "none",
+        });
       },
-    });
 
-    productPhotosTl.to(".product-details-photos-container", {
-      y: window.innerHeight * -1 - 20,
-      ease: "none",
-    });
-
-    productPhotosTl.to(".product-details-photos-container", {
-      y: window.innerHeight * -2 - 40,
-      ease: "none",
-    });
-
-    productPhotosTl.to(".product-details-photos-container", {
-      y: window.innerHeight * -3 - 60,
-      ease: "none",
-    });
-
-    productPhotosTl.to(".product-details-photos-container", {
-      y: window.innerHeight * -4 - 80,
-      ease: "none",
+      "(max-width: 1023px)": function () {},
     });
   });
 }
