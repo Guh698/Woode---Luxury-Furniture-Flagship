@@ -293,6 +293,41 @@ function initHomeAnimations(container) {
     const theEdit = container.querySelector(".the-edit");
     const animWrapper = container.querySelector(".animation-wrapper");
     if (theEdit && animWrapper) {
+      imgContainers.forEach((imgContainer) => {
+        const img = imgContainer.querySelector("img");
+        const hoveredImg = imgContainer.querySelector(".hovered-img");
+
+        gsap.to(img, {
+          y: "10%",
+          ease: "none",
+          scrollTrigger: {
+            trigger: imgContainer,
+            start: "top bottom",
+            end: "bottom top",
+            scrub: true,
+          },
+        });
+
+        gsap.to(hoveredImg, {
+          y: "10%",
+          ease: "none",
+          scrollTrigger: {
+            trigger: imgContainer,
+            start: "top bottom",
+            end: "bottom top",
+            scrub: true,
+          },
+        });
+
+        img.addEventListener("mouseenter", () => {
+          gsap.set(img, { opacity: 0 });
+        });
+
+        img.addEventListener("mouseleave", () => {
+          gsap.set(img, { opacity: 1 });
+        });
+      });
+
       ScrollTrigger.matchMedia({
         "(min-width: 1024px)": function () {
           const extraHeight = theEdit.offsetHeight - window.innerHeight;
@@ -317,59 +352,9 @@ function initHomeAnimations(container) {
             .to(".hero", { filter: "blur(3px)", ease: "none" }, "<");
 
           const imgContainers = container.querySelectorAll(".img-container");
-
-          imgContainers.forEach((imgContainer) => {
-            const img = imgContainer.querySelector("img");
-            const hoveredImg = imgContainer.querySelector(".hovered-img");
-
-            gsap.to(img, {
-              y: "10%",
-              ease: "none",
-              scrollTrigger: {
-                trigger: imgContainer,
-                start: "top bottom",
-                end: "bottom top",
-                scrub: true,
-              },
-            });
-
-            gsap.to(hoveredImg, {
-              y: "10%",
-              ease: "none",
-              scrollTrigger: {
-                trigger: imgContainer,
-                start: "top bottom",
-                end: "bottom top",
-                scrub: true,
-              },
-            });
-
-            img.addEventListener("mouseenter", () => {
-              gsap.set(img, { opacity: 0 });
-            });
-
-            img.addEventListener("mouseleave", () => {
-              gsap.set(img, { opacity: 1 });
-            });
-          });
         },
 
-        "(max-width: 1023px)": function () {
-          /*  let theEditTl = gsap.timeline({
-            scrollTrigger: {
-              trigger: ".animation-wrapper",
-              start: "top top",
-              scrub: true,
-              ease: "none",
-              invalidateOnRefresh: true,
-            },
-          });
-
-          theEditTl
-            .to(".the-edit", { y: 0, ease: "none" })
-            .to(".hero-background", { scale: 1.1, ease: "none" }, "<")
-            .to(".hero", { filter: "blur(3px)", ease: "none" }, "<");*/
-        },
+        "(max-width: 1023px)": function () {},
       });
     }
   }, container);
