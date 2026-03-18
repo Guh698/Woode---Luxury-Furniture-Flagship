@@ -242,6 +242,7 @@ header a {
   cursor: pointer;
   z-index: 100;
   opacity: 0;
+  pointer-events: none;
   transform: translateY(15px);
 }
 
@@ -295,6 +296,7 @@ header a {
   align-items: center;
   padding: 0 2rem;
   height: 100dvh;
+  overflow: hidden;
 }
 
 .hero-background {
@@ -548,6 +550,7 @@ button {
   font-size: 11rem;
   font-family: var(--destac-font-family);
   text-transform: uppercase;
+  text-align: left;
   line-height: 100px;
   grid-area: title;
 }
@@ -578,10 +581,12 @@ button {
   transform: translateY(-20%);
 }
 
-.product-view-photo {
-  height: 100%;
-  width: 100%;
+.product-main-photo {
   background-color: var(--dark-color);
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center center;
 }
 
 .grid {
@@ -700,7 +705,7 @@ button {
   grid-template-rows: repeat(4, 1fr);
   grid-template-areas:
     "title       title       title       title       title"
-    ".       .       .       text    ."
+    "home-btn    .           .           text        ."
     ".       .       .       .       ."
     "product product product product product";
   gap: 1rem;
@@ -716,6 +721,20 @@ h1.products-category-title {
   grid-area: title;
   align-self: start;
   justify-self: start;
+}
+
+.back-to-home-btn {
+  position: relative;
+  grid-area: home-btn;
+  color: var(--dark-color);
+  font-size: 1.6rem;
+  font-family: var(--default-font-family);
+  font-weight: var(--light-weight-font);
+  overflow: hidden;
+}
+
+.back-to-home-btn .hover-line {
+  background-color: var(--dark-color);
 }
 
 .products-category-text {
@@ -745,6 +764,124 @@ h1.products-category-title {
   height: 100%;
   flex-shrink: 0;
   background-color: var(--dark-color);
+}
+
+.contact-hero {
+  height: 100dvh;
+  display: grid;
+  height: 100vh;
+  grid-template-columns: repeat(5, 1fr);
+  grid-template-rows: repeat(4, 1fr);
+  grid-template-areas:
+    "title          title          title          .             ."
+    "home-btn       .              .              .             ."
+    "links-list     .              .              address       ."
+    ".              .              .              .             .";
+  gap: 2rem;
+  padding: 2rem;
+}
+
+.contact-hero h1 {
+  grid-area: title;
+  display: flex;
+  align-self: start;
+  line-height: 100px;
+  color: var(--dark-color);
+  font-family: var(--destac-font-family);
+  text-transform: uppercase;
+  font-size: 11rem;
+}
+
+.contact-hero a {
+  grid-area: home-btn;
+  color: var(--dark-color);
+  font-size: 1.6rem;
+  font-family: var(--default-font-family);
+  font-weight: var(--light-weight-font);
+}
+
+.back-to-home-btn {
+  text-transform: uppercase;
+  justify-self: start;
+  align-self: start;
+}
+
+.contact-hero ul {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  font-size: 1.6rem;
+  grid-area: links-list;
+}
+
+.contact-hero ul li {
+  position: relative;
+  justify-self: start;
+  align-self: start;
+  overflow: hidden;
+}
+
+.contact-hero ul li .hover-line {
+  transform: translateX(0%);
+  background-color: var(--dark-color);
+}
+
+.contact-hero .address {
+  grid-area: address;
+  width: 100%;
+  font-size: 1.6rem;
+  text-align: justify;
+}
+
+.contact-carousel-wrapper {
+  position: absolute;
+  top: 0;
+  right: 0;
+  height: 100%;
+  width: calc(40% + 2rem);
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.contact-animated-photos-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  grid-template-rows: repeat(4, 1fr);
+  grid-template-areas:
+    ".          photo1"
+    "photo2     .    "
+    ".          photo3    "
+    "photo4     .    ";
+  gap: 2rem;
+  padding: 2rem;
+}
+
+.contact-animated-photo {
+  width: 100%;
+  height: 100%;
+  background-color: var(--dark-color);
+  pointer-events: auto;
+}
+
+.photo1 {
+  grid-area: photo1;
+}
+
+.photo2 {
+  grid-area: photo2;
+}
+
+.photo3 {
+  grid-area: photo3;
+}
+
+.photo4 {
+  grid-area: photo4;
 }
 
 footer {
@@ -807,4 +944,260 @@ footer span {
   width: 100vw;
   background-color: var(--dark-color);
   z-index: 10000;
+}
+
+@media (max-width: 1024px) {
+  .header-link {
+    display: none;
+  }
+
+  header ul.header-icons {
+    display: none;
+  }
+
+  .hero {
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  .hero-slogan {
+    width: auto;
+    font-size: 4rem;
+    text-align: center;
+  }
+
+  .hero-timers-container {
+    position: absolute;
+    bottom: 2rem;
+    width: 100%;
+    height: 0.7rem;
+    border: 1px solid #fff;
+  }
+
+  .the-edit {
+    height: 350vh;
+  }
+
+  .the-edit h2 {
+    line-height: 100px;
+    grid-area: title;
+    left: 0;
+    font-size: 5rem;
+  }
+
+  .the-edit p {
+    grid-area: description;
+    width: 100%;
+  }
+
+  .the-edit-first-container {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-rows: repeat(4, 1fr);
+    grid-template-areas:
+      "title       title       "
+      "description            ."
+      ".           .           "
+      "photos       photos     ";
+    gap: 2rem;
+  }
+
+  .first-container-photos {
+    grid-area: photos;
+    display: flex;
+    width: 100%;
+    height: 100%;
+  }
+
+  .img-container {
+    width: 50%;
+    height: 100%;
+  }
+
+  .the-edit-second-container {
+    display: flex;
+    height: 150vh;
+  }
+
+  .second-container-photos {
+    display: grid;
+    grid-template-columns: repeat(1, 1fr);
+    grid-template-rows: repeat(3, 1fr);
+    grid-template-areas:
+      "photo1"
+      "photo2"
+      "photo3";
+  }
+
+  .third-container {
+    grid-area: photo1;
+    width: 100%;
+    height: 100%;
+  }
+
+  .fourth-container {
+    grid-area: photo2;
+    width: 100%;
+    height: 100%;
+  }
+
+  .fifth-container {
+    grid-area: photo3;
+    width: 100%;
+    height: 100%;
+  }
+
+  .the-edit-third-container {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+  }
+
+  .the-edit-third-container .grid-container {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-rows: repeat(2, 1fr);
+    grid-template-areas:
+      ".        text"
+      "button   .";
+    width: 100%;
+    height: 100%;
+    gap: 2rem;
+  }
+
+  .third-container-photos {
+    width: 100%;
+    height: 50%;
+  }
+
+  .sixth-container {
+    width: 100%;
+    height: 100%;
+  }
+
+  .seventh-container {
+    width: 100%;
+    height: 100%;
+  }
+
+  .grid-container p {
+    width: 50%;
+    grid-area: text;
+    height: 100%;
+  }
+
+  .grid-container button {
+    grid-area: button;
+    display: flex;
+    align-self: end;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+  }
+
+  .product-page-hero {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-rows: repeat(4, 1fr);
+    grid-template-areas:
+      "title            title        "
+      "materials        price        "
+      "description      description  "
+      ".                .            ";
+  }
+
+  .product-page-hero h1 {
+    font-size: 7rem;
+  }
+
+  .product-price {
+    display: flex;
+    /*justify-self: end;*/
+  }
+
+  .product-materials {
+    display: none;
+  }
+
+  .product-description {
+    width: 50%;
+  }
+
+  .product-view {
+    height: 50vh;
+  }
+
+  .product-details {
+    height: 150dvh;
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-areas:
+      "photos   photos"
+      "photos       photos"
+      "description       description"
+      "button       .";
+  }
+
+  .product-details-photos-container {
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+  }
+
+  .product-details-description {
+    padding-right: 0%;
+  }
+
+  .product-details-button {
+    height: 20%;
+  }
+
+  .continue-curating {
+    height: 150vh;
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-rows: 0.3fr 1fr 1fr 1fr;
+    grid-template-areas:
+      "title              title       "
+      "recommendeds       recommendeds"
+      "recommendeds       recommendeds"
+      "recommendeds       recommendeds";
+  }
+
+  .continue-curating h2 {
+    grid-area: title;
+    display: flex;
+    align-self: end;
+  }
+
+  .recommended-products {
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+  }
+
+  .recommended-products-product {
+    width: 100%;
+  }
+
+  footer {
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-rows: repeat(3, 1fr);
+    grid-template-areas:
+      "title                  title"
+      "list2                  ."
+      "copy                   .";
+  }
+
+  footer h2 {
+    display: flex;
+    justify-self: center;
+    font-size: 7rem;
+    text-align: center;
+    line-height: 100px;
+    text-transform: uppercase;
+  }
+
+  .footer-list1 {
+    display: none;
+  }
 }

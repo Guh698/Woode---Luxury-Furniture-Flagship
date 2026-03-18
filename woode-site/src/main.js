@@ -16,6 +16,8 @@ let homeCtx;
 let productPageCtx;
 let productsCtx;
 let homeAbortController;
+let activeMenuTarget = null;
+let isMenuAnimating = false;
 
 const client = createClient({
   projectId: "1zhhp7qc",
@@ -28,8 +30,48 @@ const urlFor = (source) => builder.image(source);
 
 const homeQuery = `*[_type == "home"][0]{
   slogan, heroImages[] { asset, alt }, editTitle, editFirstText,
-  editFirstImage, hoverimg1, editSecondImage, hoverimg2, editThirdImage, hoverimg3, editFourthImage, hoverimg4,
-  editFifthImage, hoverimg5, editSixthImage, hoverimg6, editSeventhImage, hoverimg7, editSecondText
+  editFirstProduct->{
+    name,
+    "slug": slug.current,
+    mainImage,
+    description
+  }, hoverimg1, editFirstSlug,  
+  editSecondProduct->{
+    name,
+    "slug": slug.current,
+    mainImage,
+    description
+  }, hoverimg2, editSecondSlug,  
+  editThirdProduct->{
+    name,
+    "slug": slug.current,
+    mainImage,
+    description
+  }, hoverimg3, editThirdSlug, 
+  editFourthProduct->{
+    name,
+    "slug": slug.current,
+    mainImage,
+    description
+  }, hoverimg4, editFourthSlug,
+  editFifthProduct->{
+    name,
+    "slug": slug.current,
+    mainImage,
+    description
+  }, hoverimg5, editFifthSlug, 
+  editSixthProduct->{
+    name,
+    "slug": slug.current,
+    mainImage,
+    description
+  }, hoverimg6, editSixthSlug, 
+  editSeventhProduct->{
+    name,
+    "slug": slug.current,
+    mainImage,
+    description
+  }, hoverimg7, editSeventhSlug, editSecondText
 }`;
 
 function initSmoother(contentEl) {
@@ -46,6 +88,95 @@ function initSmoother(contentEl) {
 async function populateHomeData(container) {
   try {
     const data = await client.fetch(homeQuery);
+
+    const firstEditLink = container.querySelector(".first-container a");
+    const firstEditImg = container.querySelector(".the-edit-first-photo");
+
+    if (data.editFirstProduct) {
+      if (firstEditLink && data.editFirstProduct.slug) {
+        firstEditLink.href = `product-page.html?slug=${data.editFirstProduct.slug}`;
+      }
+
+      if (firstEditImg && data.editFirstProduct.mainImage) {
+        firstEditImg.src = urlFor(data.editFirstProduct.mainImage).url();
+      }
+    }
+    const secondEditLink = container.querySelector(".second-container a");
+    const secondEditImg = container.querySelector(".the-edit-second-photo");
+
+    if (data.editSecondProduct) {
+      if (secondEditLink && data.editSecondProduct.slug) {
+        secondEditLink.href = `product-page.html?slug=${data.editSecondProduct.slug}`;
+      }
+
+      if (secondEditImg && data.editSecondProduct.mainImage) {
+        secondEditImg.src = urlFor(data.editSecondProduct.mainImage).url();
+      }
+    }
+    const thirdEditLink = container.querySelector(".third-container a");
+    const thirdEditImg = container.querySelector(".the-edit-third-photo");
+
+    if (data.editThirdProduct) {
+      if (thirdEditLink && data.editThirdProduct.slug) {
+        thirdEditLink.href = `product-page.html?slug=${data.editThirdProduct.slug}`;
+      }
+
+      if (thirdEditImg && data.editThirdProduct.mainImage) {
+        thirdEditImg.src = urlFor(data.editThirdProduct.mainImage).url();
+      }
+    }
+    const fourthEditLink = container.querySelector(".fourth-container a");
+    const fourthEditImg = container.querySelector(".the-edit-fourth-photo");
+
+    if (data.editFourthProduct) {
+      if (fourthEditLink && data.editFourthProduct.slug) {
+        fourthEditLink.href = `product-page.html?slug=${data.editFourthProduct.slug}`;
+      }
+
+      if (fourthEditImg && data.editFourthProduct.mainImage) {
+        fourthEditImg.src = urlFor(data.editFourthProduct.mainImage).url();
+      }
+    }
+
+    const fifthEditLink = container.querySelector(".fifth-container a");
+    const fifthEditImg = container.querySelector(".the-edit-fifth-photo");
+
+    if (data.editFifthProduct) {
+      if (fifthEditLink && data.editFifthProduct.slug) {
+        fifthEditLink.href = `product-page.html?slug=${data.editFifthProduct.slug}`;
+      }
+
+      if (fifthEditImg && data.editFifthProduct.mainImage) {
+        fifthEditImg.src = urlFor(data.editFifthProduct.mainImage).url();
+      }
+    }
+
+    const sixthEditLink = container.querySelector(".sixth-container a");
+    const sixthEditImg = container.querySelector(".the-edit-sixth-photo");
+
+    if (data.editSixthProduct) {
+      if (sixthEditLink && data.editSixthProduct.slug) {
+        sixthEditLink.href = `product-page.html?slug=${data.editSixthProduct.slug}`;
+      }
+
+      if (sixthEditImg && data.editSixthProduct.mainImage) {
+        sixthEditImg.src = urlFor(data.editSixthProduct.mainImage).url();
+      }
+    }
+
+    const seventhEditLink = container.querySelector(".seventh-container a");
+    const seventhEditImg = container.querySelector(".the-edit-seventh-photo");
+
+    if (data.editSeventhProduct) {
+      if (seventhEditLink && data.editSeventhProduct.slug) {
+        seventhEditLink.href = `product-page.html?slug=${data.editSeventhProduct.slug}`;
+      }
+
+      if (seventhEditImg && data.editSeventhProduct.mainImage) {
+        seventhEditImg.src = urlFor(data.editSeventhProduct.mainImage).url();
+      }
+    }
+
     if (!data) return;
 
     const assignText = (selector, dataVal) => {
@@ -98,29 +229,6 @@ function initHomeAnimations(container) {
   homeAbortController = new AbortController();
   const { signal } = homeAbortController;
 
-  const headerBackground = document.querySelector(".header-background");
-  const headerLinks = document.querySelectorAll(".header-link");
-  const livingLink = document.getElementById("living_link");
-  const diningLink = document.getElementById("dining_link");
-  const bedroomLink = document.getElementById("bedroom_link");
-  const collectionsLink = document.getElementById("collections_link");
-  const searchLink = document.getElementById("search_link");
-  const cartLink = document.getElementById("cart_link");
-
-  const categoryMenus = [
-    { link: livingLink, target: "#menu_living" },
-    { link: diningLink, target: "#menu_dining" },
-    { link: bedroomLink, target: "#menu_bedroom" },
-    { link: collectionsLink, target: "#menu_collections" },
-    { link: searchLink, target: "#search_tab" },
-    { link: cartLink, target: "#cart_tab" },
-  ];
-
-  const cartTarget = document.getElementById("cart_tab");
-
-  let activeTarget = null;
-  let isAnimating = false;
-
   homeCtx = gsap.context(() => {
     const sloganElement = container.querySelector("#hero_slogan");
     if (sloganElement) {
@@ -129,6 +237,14 @@ function initHomeAnimations(container) {
 
     const images = container.querySelectorAll("#hero_background img");
     const timerContainer = container.querySelector("#hero_timers_container");
+    const globalHeaderBg = document.querySelector(".header-background");
+
+    ScrollTrigger.create({
+      trigger: ".the-edit",
+      start: "top center",
+      onEnter: () => gsap.to(globalHeaderBg, { y: 0 }),
+      onLeaveBack: () => gsap.to(globalHeaderBg, { y: "-100%" }),
+    });
 
     if (timerContainer && images.length > 0) {
       timerContainer.innerHTML = "";
@@ -197,13 +313,6 @@ function initHomeAnimations(container) {
         .to(".hero-background", { scale: 1.1, ease: "none" }, "<")
         .to(".hero", { filter: "blur(3px)", ease: "none" }, "<");
 
-      ScrollTrigger.create({
-        trigger: ".the-edit",
-        start: "top center",
-        onEnter: () => gsap.to(headerBackground, { y: 0 }),
-        onLeaveBack: () => gsap.to(headerBackground, { y: "-100%" }),
-      });
-
       const imgContainers = container.querySelectorAll(".img-container");
 
       imgContainers.forEach((imgContainer) => {
@@ -241,233 +350,6 @@ function initHomeAnimations(container) {
         });
       });
     }
-
-    const cartTargetCloseBtn = document.getElementById("cart_close_btn");
-    categoryMenus.forEach(({ link, target }) => {
-      if (!link) return;
-
-      link.addEventListener("click", () => {
-        if (isAnimating) return;
-
-        const targetOverlay = document.querySelector(target);
-
-        // --- 1. ISOLATED CART LOGIC (X-Axis) ---
-        if (target === "#cart_tab") {
-          isAnimating = true;
-
-          const targetItems = targetOverlay.querySelectorAll(
-            "h2, .cart-tab-line, .investment-counter, .pieces-counter, .contact-concierge-btn",
-          );
-
-          const tl = gsap.timeline({
-            onComplete: () => {
-              isAnimating = false;
-            },
-          });
-
-          // NEW LOGIC: Close any open Y-axis menu before sliding the cart in
-          if (activeTarget) {
-            const oldOverlay = document.querySelector(activeTarget);
-            const oldItems = oldOverlay.querySelectorAll(
-              ".product-categories h3, .product-categories li, .search-item",
-            );
-
-            tl.to(oldItems, {
-              y: -10,
-              opacity: 0,
-              duration: 0.3,
-              stagger: 0.02,
-              ease: "power2.in",
-            }).set(oldOverlay, { y: "-100%" });
-
-            activeTarget = null; // Clear the active target since the cart is now open
-          }
-
-          gsap.set(targetItems, { opacity: 0, y: 15 });
-
-          tl.to(
-            targetOverlay,
-            {
-              x: "0%", // Slide in from right
-              duration: 0.8,
-              ease: "expo.inOut",
-            },
-            activeTarget ? "<0.1" : undefined,
-          )
-            .to(
-              // Overlap the slide slightly if closing a menu
-              [targetItems, cartTargetCloseBtn],
-              {
-                opacity: 1,
-                y: 0,
-                duration: 0.6,
-                stagger: 0.04,
-                ease: "power3.out",
-              },
-              "-=0.3",
-            )
-            .to(
-              ".cart-tab-overlay",
-              {
-                opacity: 1,
-                pointerEvents: "auto",
-                duration: 0.8,
-                ease: "expo.inOut",
-              },
-              0,
-            );
-
-          cartTargetCloseBtn.addEventListener("click", () => {
-            console.log("clickado");
-            const tl = gsap.timeline({
-              onComplete: () => {
-                activeTarget = null;
-                isAnimating = false;
-              },
-            });
-
-            tl.to([cartTargetCloseBtn, targetItems], {
-              y: -10,
-              opacity: 0,
-              duration: 0.4,
-              stagger: -0.02,
-              ease: "power2.in",
-            })
-              .to(targetOverlay, {
-                x: "100%",
-                duration: 0.8,
-                ease: "expo.inOut",
-              })
-              .to(
-                ".cart-tab-overlay",
-                {
-                  opacity: 0,
-                  pointerEvents: "none",
-                  duration: 0.8,
-                  ease: "expo.inOut",
-                },
-                0,
-              );
-          });
-          return; // Stop execution so it doesn't run the Y-axis logic below
-        }
-
-        // --- 2. STANDARD MENU LOGIC (Y-Axis) ---
-        const targetItems = targetOverlay.querySelectorAll(
-          ".product-categories h3, .product-categories li, .search-item",
-        );
-
-        if (activeTarget === target) {
-          isAnimating = true;
-
-          const tl = gsap.timeline({
-            onComplete: () => {
-              activeTarget = null;
-              isAnimating = false;
-            },
-          });
-
-          tl.to(targetItems, {
-            y: -10,
-            opacity: 0,
-            duration: 0.4,
-            stagger: -0.02,
-            ease: "power2.in",
-          }).to(targetOverlay, {
-            y: "-100%",
-            duration: 0.8,
-            ease: "expo.inOut",
-          });
-        } else {
-          isAnimating = true;
-
-          if (activeTarget) {
-            const oldOverlay = document.querySelector(activeTarget);
-            const oldItems = oldOverlay.querySelectorAll(
-              ".product-categories h3, .product-categories li, .search-item",
-            );
-
-            const tl = gsap.timeline({
-              onComplete: () => {
-                activeTarget = target;
-                isAnimating = false;
-              },
-            });
-
-            tl.to(oldItems, {
-              y: -10,
-              opacity: 0,
-              duration: 0.3,
-              stagger: 0.02,
-              ease: "power2.in",
-            }).set(oldOverlay, { y: "-100%" });
-
-            tl.set(targetOverlay, { y: "0%" }).fromTo(
-              targetItems,
-              { opacity: 0, y: 15 },
-              {
-                opacity: 1,
-                y: 0,
-                duration: 0.6,
-                stagger: 0.03,
-                ease: "power3.out",
-              },
-            );
-          } else {
-            const tl = gsap.timeline({
-              onComplete: () => {
-                activeTarget = target;
-                isAnimating = false;
-              },
-            });
-
-            gsap.set(targetItems, { opacity: 0, y: 15 });
-
-            tl.to(targetOverlay, {
-              y: "0%",
-              duration: 0.8,
-              ease: "expo.inOut",
-            }).to(
-              targetItems,
-              {
-                opacity: 1,
-                y: 0,
-                duration: 0.6,
-                stagger: 0.04,
-                ease: "power3.out",
-              },
-              "-=0.3",
-            );
-          }
-        }
-      });
-    });
-
-    headerLinks.forEach((link) => {
-      let line = link.querySelector(".hover-line");
-
-      if (!line) {
-        line = document.createElement("div");
-        line.classList.add("hover-line");
-        link.appendChild(line);
-      }
-
-      link.addEventListener(
-        "mouseenter",
-        () =>
-          gsap.fromTo(
-            line,
-            { x: "-100%" },
-            { x: "0%", duration: 0.4, overwrite: true },
-          ),
-        { signal },
-      );
-      link.addEventListener(
-        "mouseleave",
-        () => gsap.to(line, { x: "100%", duration: 0.4, overwrite: true }),
-        { signal },
-      );
-    });
   }, container);
 }
 
@@ -480,6 +362,9 @@ function killHome() {
 //eu que fiz :)
 function initProductPageAnimations(container) {
   productPageCtx = gsap.context(() => {
+    const globalHeader = document.querySelector("header");
+    const globalHeaderBg = document.querySelector(".header-background");
+
     let productPhotosTl = gsap.timeline({
       scrollTrigger: {
         trigger: ".product-details",
@@ -488,20 +373,20 @@ function initProductPageAnimations(container) {
         pin: true,
         scrub: true,
         onEnter() {
-          gsap.to("header", { y: "-100%" });
-          gsap.to(".header-background", { y: "-100%" });
+          gsap.to(globalHeader, { y: "-100%" });
+          gsap.to(globalHeaderBg, { y: "-100%" });
         },
         onEnterBack() {
-          gsap.to("header", { y: "-100%" });
-          gsap.to(".header-background", { y: "-100%" });
+          gsap.to(globalHeader, { y: "-100%" });
+          gsap.to(globalHeaderBg, { y: "-100%" });
         },
         onLeave() {
-          gsap.to("header", { y: "0%" });
-          gsap.to(".header-background", { y: "0%" });
+          gsap.to(globalHeader, { y: "0%" });
+          gsap.to(globalHeaderBg, { y: "0%" });
         },
         onLeaveBack() {
-          gsap.to("header", { y: "0%" });
-          gsap.to(".header-background", { y: "0%" });
+          gsap.to(globalHeader, { y: "0%" });
+          gsap.to(globalHeaderBg, { y: "0%" });
         },
       },
     });
@@ -541,6 +426,20 @@ function initProductsCategory(container) {
       ".products-category-cards-container",
     );
 
+    const backToHomeLink = document.querySelector(".back-to-home-btn");
+    const hoverLine = document.querySelector(".hover-line");
+
+    backToHomeLink.addEventListener("mouseenter", () =>
+      gsap.fromTo(
+        hoverLine,
+        { x: "-100%" },
+        { x: "0%", duration: 0.4, overwrite: true },
+      ),
+    );
+    backToHomeLink.addEventListener("mouseleave", () =>
+      gsap.to(hoverLine, { x: "100%", duration: 0.4, overwrite: true }),
+    );
+
     if (cards.length === 0 || !cardContainer) return;
 
     let targetX = 0,
@@ -566,7 +465,7 @@ function initProductsCategory(container) {
       preventDefault: true,
       onChange: (self) => {
         const velocity = self.deltaY + self.deltaX;
-        targetX -= velocity * 0.8;
+        targetX += velocity * 0.8;
       },
     });
 
@@ -594,6 +493,317 @@ function killProductsCategory() {
   if (productsCtx) productsCtx.revert();
 }
 
+function initContactAnimations(container) {
+  let contactCtx = gsap.context(() => {
+    const backToHomeLink = document.querySelector(".back-to-home-btn");
+    const hoverLine = document.querySelector(".hover-line");
+
+    backToHomeLink.addEventListener("mouseenter", () =>
+      gsap.fromTo(
+        hoverLine,
+        { x: "-100%" },
+        { x: "0%", duration: 0.4, overwrite: true },
+      ),
+    );
+    backToHomeLink.addEventListener("mouseleave", () =>
+      gsap.to(hoverLine, { x: "100%", duration: 0.4, overwrite: true }),
+    );
+    const contactLinks = document.querySelectorAll(".contact-link");
+    contactLinks.forEach((contactLink) => {
+      const hoverLine = contactLink.querySelector(".hover-line");
+      contactLink.addEventListener("mouseenter", () => {
+        let tl = gsap.timeline();
+        tl.fromTo(hoverLine, { x: 0 }, { x: "100%", duration: 0.3 });
+        tl.set(hoverLine, { x: "-100%" });
+        tl.to(hoverLine, { x: 0 });
+      });
+    });
+
+    // --- Infinite Ticker Loop ---
+    const photoContainers = gsap.utils.toArray(
+      ".contact-animated-photos-container",
+    );
+    if (photoContainers.length === 0) return;
+
+    let containerHeight;
+    let wrapFunction;
+    let currentY = 0;
+    const speed = 1.5; // Pixels per frame. Adjust for speed.
+
+    function updateMetrics() {
+      // Get the height of one full container (usually 100vh)
+      containerHeight = photoContainers[0].clientHeight;
+
+      // Wrap logic: when a container hits -containerHeight (off the top),
+      // it teleports to containerHeight (off the bottom)
+      wrapFunction = gsap.utils.wrap(-containerHeight, containerHeight);
+    }
+
+    // Initialize and handle window resizing
+    updateMetrics();
+    window.addEventListener("resize", updateMetrics);
+
+    const contactTickerFunc = () => {
+      currentY += speed;
+
+      photoContainers.forEach((block, i) => {
+        // Container 0 starts at 0, Container 1 starts at containerHeight
+        const initialOffset = i * containerHeight;
+
+        // Calculate the new Y position and wrap it if necessary
+        const yPos = wrapFunction(initialOffset - currentY);
+
+        // Apply the movement
+        gsap.set(block, {
+          y: yPos,
+          force3D: true,
+        });
+      });
+    };
+
+    gsap.ticker.add(contactTickerFunc);
+
+    return () => gsap.ticker.remove(contactTickerFunc);
+  }, container);
+}
+
+function killContact() {
+  if (contactCtx) contactCtx.revert();
+}
+
+function initGlobalHeader() {
+  const headerLinks = document.querySelectorAll(".header-link");
+  const livingLink = document.getElementById("living_link");
+  const diningLink = document.getElementById("dining_link");
+  const bedroomLink = document.getElementById("bedroom_link");
+  const collectionsLink = document.getElementById("collections_link");
+  const searchLink = document.getElementById("search_link");
+  const cartLink = document.getElementById("cart_link");
+  const cartTargetCloseBtn = document.getElementById("cart_close_btn");
+
+  const categoryMenus = [
+    { link: livingLink, target: "#menu_living" },
+    { link: diningLink, target: "#menu_dining" },
+    { link: bedroomLink, target: "#menu_bedroom" },
+    { link: collectionsLink, target: "#menu_collections" },
+    { link: searchLink, target: "#search_tab" },
+    { link: cartLink, target: "#cart_tab" },
+  ];
+
+  categoryMenus.forEach(({ link, target }) => {
+    if (!link) return;
+
+    link.addEventListener("click", () => {
+      if (isMenuAnimating) return;
+
+      const targetOverlay = document.querySelector(target);
+
+      if (target === "#cart_tab") {
+        isMenuAnimating = true;
+        document.body.style.overflow = "hidden";
+
+        const targetItems = targetOverlay.querySelectorAll(
+          "h2, .cart-tab-line, .investment-counter, .pieces-counter, .contact-concierge-btn",
+        );
+
+        const tl = gsap.timeline({
+          onComplete: () => {
+            isMenuAnimating = false;
+          },
+        });
+
+        if (activeMenuTarget) {
+          const oldOverlay = document.querySelector(activeMenuTarget);
+          const oldItems = oldOverlay.querySelectorAll(
+            ".product-categories h3, .product-categories li, .search-item",
+          );
+
+          tl.to(oldItems, {
+            y: -10,
+            opacity: 0,
+            duration: 0.3,
+            stagger: 0.02,
+            ease: "power2.in",
+          }).set(oldOverlay, { y: "-100%" });
+
+          activeMenuTarget = null;
+        }
+
+        gsap.set(targetItems, { opacity: 0, y: 15 });
+
+        tl.to(
+          targetOverlay,
+          { x: "0%", duration: 0.8, ease: "expo.inOut" },
+          activeMenuTarget ? "<0.1" : undefined,
+        )
+          .to(
+            [targetItems, cartTargetCloseBtn],
+            {
+              opacity: 1,
+              y: 0,
+              pointerEvents: "auto",
+              duration: 0.6,
+              stagger: 0.04,
+              ease: "power3.out",
+            },
+            "-=0.3",
+          )
+          .to(
+            ".cart-tab-overlay",
+            {
+              opacity: 1,
+              pointerEvents: "auto",
+              duration: 0.8,
+              ease: "expo.inOut",
+            },
+            0,
+          );
+
+        cartTargetCloseBtn.addEventListener(
+          "click",
+          () => {
+            document.body.style.overflow = "";
+            const tl = gsap.timeline({
+              onComplete: () => {
+                activeMenuTarget = null;
+                isMenuAnimating = false;
+              },
+            });
+
+            tl.to([cartTargetCloseBtn, targetItems], {
+              y: -10,
+              opacity: 0,
+              duration: 0.4,
+              stagger: -0.02,
+              pointerEvents: "none",
+              ease: "power2.in",
+            })
+              .to(targetOverlay, {
+                x: "100%",
+                duration: 0.8,
+                ease: "expo.inOut",
+              })
+              .to(
+                ".cart-tab-overlay",
+                {
+                  opacity: 0,
+                  pointerEvents: "none",
+                  duration: 0.8,
+                  ease: "expo.inOut",
+                },
+                0,
+              );
+          },
+          { once: true },
+        );
+        return;
+      }
+
+      const targetItems = targetOverlay.querySelectorAll(
+        ".product-categories h3, .product-categories li, .search-item",
+      );
+
+      if (activeMenuTarget === target) {
+        isMenuAnimating = true;
+        const tl = gsap.timeline({
+          onComplete: () => {
+            activeMenuTarget = null;
+            isMenuAnimating = false;
+          },
+        });
+
+        tl.to(targetItems, {
+          y: -10,
+          opacity: 0,
+          duration: 0.4,
+          stagger: -0.02,
+          ease: "power2.in",
+        }).to(targetOverlay, { y: "-100%", duration: 0.8, ease: "expo.inOut" });
+      } else {
+        isMenuAnimating = true;
+
+        if (activeMenuTarget) {
+          const oldOverlay = document.querySelector(activeMenuTarget);
+          const oldItems = oldOverlay.querySelectorAll(
+            ".product-categories h3, .product-categories li, .search-item",
+          );
+
+          const tl = gsap.timeline({
+            onComplete: () => {
+              activeMenuTarget = target;
+              isMenuAnimating = false;
+            },
+          });
+
+          tl.to(oldItems, {
+            y: -10,
+            opacity: 0,
+            duration: 0.3,
+            stagger: 0.02,
+            ease: "power2.in",
+          }).set(oldOverlay, { y: "-100%" });
+
+          tl.set(targetOverlay, { y: "0%" }).fromTo(
+            targetItems,
+            { opacity: 0, y: 15 },
+            {
+              opacity: 1,
+              y: 0,
+              duration: 0.6,
+              stagger: 0.03,
+              ease: "power3.out",
+            },
+          );
+        } else {
+          const tl = gsap.timeline({
+            onComplete: () => {
+              activeMenuTarget = target;
+              isMenuAnimating = false;
+            },
+          });
+
+          gsap.set(targetItems, { opacity: 0, y: 15 });
+
+          tl.to(targetOverlay, {
+            y: "0%",
+            duration: 0.8,
+            ease: "expo.inOut",
+          }).to(
+            targetItems,
+            {
+              opacity: 1,
+              y: 0,
+              duration: 0.6,
+              stagger: 0.04,
+              ease: "power3.out",
+            },
+            "-=0.3",
+          );
+        }
+      }
+    });
+  });
+
+  headerLinks.forEach((link) => {
+    let line = link.querySelector(".hover-line");
+    if (!line) {
+      line = document.createElement("div");
+      line.classList.add("hover-line");
+      link.appendChild(line);
+    }
+    link.addEventListener("mouseenter", () =>
+      gsap.fromTo(
+        line,
+        { x: "-100%" },
+        { x: "0%", duration: 0.4, overwrite: true },
+      ),
+    );
+    link.addEventListener("mouseleave", () =>
+      gsap.to(line, { x: "100%", duration: 0.4, overwrite: true }),
+    );
+  });
+}
+
 function resetHeaderState() {
   gsap.set(".header-background", { y: "-100%" });
   gsap.set(".hover-line", { x: "-100%" });
@@ -607,8 +817,13 @@ function resetHeaderState() {
     duration: 0.3,
     ease: "power2.inOut",
   });
+
+  // ADD THESE TWO LINES:
+  activeMenuTarget = null;
+  isMenuAnimating = false;
 }
 
+initGlobalHeader();
 let transitionTl = gsap.timeline();
 
 barba.init({
@@ -619,6 +834,8 @@ barba.init({
     {
       namespace: "home",
       beforeEnter() {
+        gsap.set(["header, footer"], { opacity: 1, pointerEvents: "auto" });
+        gsap.set(".header-background", { y: "-100%" });
         document.body.classList.add("is-home");
         document.body.classList.remove("is-product");
         document.body.style.overflow = "";
@@ -627,13 +844,11 @@ barba.init({
       },
       async afterEnter(data) {
         await populateHomeData(data.next.container);
-
         initSmoother(data.next.container);
         initHomeAnimations(data.next.container);
-
         setTimeout(() => ScrollTrigger.refresh(), 600);
       },
-      beforeLeave() {
+      afterLeave() {
         killHome();
       },
     },
@@ -648,21 +863,66 @@ barba.init({
         gsap.set(".header-background", { y: 0 });
       },
       async afterEnter(data) {
-        await populateHomeData(data.next.container);
-
+        const urlParams = new URLSearchParams(window.location.search);
         initSmoother(data.next.container);
+        const currentSlug = urlParams.get("slug");
+
+        if (currentSlug) {
+          const query = `*[_type == "product" && slug.current == "${currentSlug}"][0]`;
+          const productData = await client.fetch(query);
+
+          document.querySelector(".product-page-hero h1").textContent =
+            productData.name;
+          document.querySelector(".product-price").textContent =
+            `$${productData.price} USD`;
+          document.querySelector(".product-materials").textContent =
+            productData.materials;
+          document.querySelector(".product-dimensions").textContent =
+            productData.dimensions;
+          if (productData.mainImage) {
+            document.querySelector(".product-main-photo").src = urlFor(
+              productData.mainImage,
+            ).url();
+          }
+          document.querySelector(".product-description").textContent =
+            productData.shortDescription;
+          document.querySelector(".product-details-description").textContent =
+            productData.detailedDescription;
+        }
+
         initHomeAnimations(data.next.container);
         initProductPageAnimations(data.next.container);
 
         setTimeout(() => ScrollTrigger.refresh(), 600);
       },
-      beforeLeave() {
+      afterLeave() {
         killHome();
         killProductPage();
+        gsap.set(".header-background", { y: "-100%" });
       },
     },
     {
-      namespace: "products",
+      namespace: "contact",
+      beforeEnter() {
+        document.body.classList.remove("is-home");
+        document.body.classList.add("is-product");
+        document.body.style.overflow = "hidden";
+        document.body.style.height = "100vh";
+        document.body.style.touchAction = "none";
+        gsap.set(["header, footer"], { opacity: 0, pointerEvents: "none" });
+        gsap.set(".header-background", { y: "-100%" });
+      },
+      afterEnter(data) {
+        initContactAnimations(data.next.container);
+      },
+      afterLeave() {
+        killContact();
+        gsap.set(["header, footer"], { opacity: 1, pointerEvents: "auto" });
+        gsap.set(".header-background", { y: "-100%" });
+      },
+    },
+    {
+      namespace: "product-categories",
       beforeEnter() {
         document.body.classList.remove("is-home");
         document.body.classList.add("is-product");
@@ -672,13 +932,44 @@ barba.init({
         gsap.set("header", { opacity: 0, pointerEvents: "none" });
         gsap.set("footer", { opacity: 0, pointerEvents: "none" });
       },
-      afterEnter(data) {
+      async afterEnter(data) {
+        const urlParams = new URLSearchParams(window.location.search);
+        const currentCategory = urlParams.get("category");
+
+        if (currentCategory) {
+          const query = `*[_type == "product" && category == "${currentCategory}"]{
+            name,
+            "slug": slug.current,
+            mainImage
+          }`;
+
+          const categoryProducts = await client.fetch(query);
+
+          const titleEl = document.querySelector(".products-category-title");
+          if (titleEl) {
+            titleEl.textContent = currentCategory
+              .replace(/-/g, " ")
+              .replace(/\b\w/g, (l) => l.toUpperCase());
+          }
+
+          const cards = document.querySelectorAll(".product-card");
+
+          categoryProducts.forEach((product, index) => {
+            if (cards[index]) {
+              cards[index].innerHTML = `
+                <a href="product-page.html?slug=${product.slug}" style="display:block; width:100%; height:100%; text-decoration:none;">
+                  <img src="${urlFor(product.mainImage).url()}" alt="${product.name}" style="width:100%; height:100%; object-fit:cover;">
+                  <h3 style="color: #ebe3e3; margin-top: 1rem; font-family: 'Bodoni Moda', serif; font-size: 1.5rem; font-weight: 400;">${product.name}</h3>
+                </a>
+              `;
+            }
+          });
+        }
+
         initProductsCategory(data.next.container);
       },
-      beforeLeave() {
-        killProductsCategory();
-      },
       afterLeave() {
+        killProductsCategory();
         gsap.set("header", { opacity: 1, pointerEvents: "auto" });
         gsap.set("footer", { opacity: 1, pointerEvents: "auto" });
       },
@@ -704,15 +995,11 @@ barba.init({
         const done = this.async();
         document.body.classList.add("is-transitioning");
 
-        if (smoother) {
-          smoother.kill();
-          smoother = null;
-        }
+        if (smoother) smoother.paused(true);
 
         resetHeaderState();
 
         let tl = gsap.timeline({ onComplete: done });
-        if (smoother) smoother.paused(true);
 
         tl.fromTo(
           ".transition",
@@ -721,8 +1008,14 @@ barba.init({
         );
       },
       enter(data) {
+        if (smoother) {
+          smoother.kill();
+          smoother = null;
+        }
+
         const wrapper = document.querySelector(".smooth-wrapper");
         if (wrapper) wrapper.style.cssText = "";
+
         window.scrollTo(0, 0);
 
         let tl = gsap.timeline({
@@ -730,6 +1023,7 @@ barba.init({
             document.body.classList.remove("is-transitioning");
           },
         });
+
         tl.to(".transition", {
           y: "-100%",
           duration: 0.8,
@@ -742,7 +1036,6 @@ barba.init({
           { opacity: 1, duration: 0.8, clearProps: "all" },
           "<0.2",
         );
-        if (smoother) smoother.paused(false);
       },
     },
   ],

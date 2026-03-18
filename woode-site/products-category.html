@@ -16,10 +16,10 @@
       <div
         class="smooth-content"
         data-barba="container"
-        data-barba-namespace="products"
+        data-barba-namespace="product-categories"
       >
         <main>
-          <div class="products-category-hero">
+          <section class="products-category-hero">
             <h1 class="products-category-title">Coffee Tables</h1>
             <p class="products-category-text">
               The curatorial anchor of the living space, our collection
@@ -27,6 +27,10 @@
               these pieces strike the perfect balance between architectural
               rigor and refined elegance.
             </p>
+            <a href="index.html" class="back-to-home-btn"
+              >Back to home
+              <div class="hover-line"></div
+            ></a>
             <div class="products-category-cards-container">
               <div class="product-card"></div>
               <div class="product-card"></div>
@@ -34,7 +38,7 @@
               <div class="product-card"></div>
               <div class="product-card"></div>
             </div>
-          </div>
+          </section>
         </main>
         <footer>
           <ul>
@@ -57,16 +61,16 @@
     <div class="transition"></div>
     <div class="header-background"></div>
     <header>
-      <a href="products-category.html" class="wordmark">Woode</a>
+      <a href="index.html" class="wordmark">Woode</a>
       <ul>
         <li class="header-link" id="living_link">Living</li>
-        <li class="header-link">Dining</li>
-        <li class="header-link">Bedroom</li>
-        <li class="header-link">Collections</li>
+        <li class="header-link" id="dining_link">Dining</li>
+        <li class="header-link" id="bedroom_link">Bedroom</li>
+        <li class="header-link" id="collections_link">Collections</li>
       </ul>
-      <a href="#" class="header-link">Contact</a>
+      <a href="contact.html" class="header-link">Contact</a>
       <ul class="header-icons">
-        <li>
+        <li id="search_link">
           <svg
             viewBox="0 0 3.8501687 3.8464062"
             version="1.1"
@@ -90,7 +94,7 @@
             </g>
           </svg>
         </li>
-        <li>
+        <li id="cart_link">
           <svg
             viewBox="0 0 4.0220413 4.0909648"
             version="1.1"
@@ -128,7 +132,225 @@
         </li>
       </ul>
     </header>
-    <div class="category-overlay" id="menu-living"></div>
+    <div class="category-overlay" id="menu_living">
+      <div class="product-categories-container">
+        <ul class="product-categories">
+          <h3>Lounge</h3>
+          <li>
+            <a href="products-category.html?category=settees-sofas"
+              >Settees & Sofas</a
+            >
+          </li>
+          <li>
+            <a href="products-category.html?category=accent-seating"
+              >Accent Seating</a
+            >
+          </li>
+          <li>
+            <a href="products-category.html?category=daybeds-benches"
+              >Daybeds & Benches</a
+            >
+          </li>
+          <li>
+            <a href="products-category.html?category=the-modular-experience"
+              >The Modular Experience</a
+            >
+          </li>
+        </ul>
+        <ul class="product-categories">
+          <h3>Surfaces</h3>
+          <li>
+            <a href="products-category.html?category=consoles">Consoles</a>
+          </li>
+          <li>
+            <a href="products-category.html?category=center-tables"
+              >Center Tables</a
+            >
+          </li>
+          <li>
+            <a href="products-category.html?category=accent-tables"
+              >Accent Tables</a
+            >
+          </li>
+          <li>
+            <a href="products-category.html?category=writing-desks"
+              >Writing Desks</a
+            >
+          </li>
+        </ul>
+      </div>
+      <div class="product-categories-images"></div>
+    </div>
+    <div class="category-overlay" id="menu_dining">
+      <div class="product-categories-container">
+        <ul class="product-categories">
+          <h3>Dining & Entertaining</h3>
+          <li>
+            <a href="products-category.html?category=gathering-tables"
+              >Gathering Tables</a
+            >
+          </li>
+          <li>
+            <a href="products-category.html?category=dining-seating"
+              >Dining Seating</a
+            >
+          </li>
+          <li>
+            <a href="products-category.html?category=buffets">Buffets</a>
+          </li>
+        </ul>
+        <ul class="product-categories">
+          <h3>Home Curiosities</h3>
+          <li>
+            <a href="products-category.html?category=indoor-flora"
+              >Indoor Flora</a
+            >
+          </li>
+          <li>
+            <a href="products-category.html?category=tabletop">Tabletop</a>
+          </li>
+          <li>
+            <a href="products-category.html?category=miroirs">Miroirs</a>
+          </li>
+        </ul>
+      </div>
+      <div class="product-categories-images"></div>
+    </div>
+    <div class="category-overlay" id="menu_bedroom">
+      <div class="product-categories-container">
+        <ul class="product-categories">
+          <h3>The Bedroom</h3>
+          <li>
+            <a href="products-category.html?category=bedsteads">Bedsteads</a>
+          </li>
+          <li>
+            <a href="products-category.html?category=night-tables"
+              >Night Tables</a
+            >
+          </li>
+          <li>
+            <a href="products-category.html?category=fine-cabinetry"
+              >Fine Cabinetry</a
+            >
+          </li>
+        </ul>
+        <ul class="product-categories">
+          <h3>Bedroom Accents</h3>
+          <li>
+            <a href="products-category.html?category=ambient-lighting"
+              >Ambient Lighting</a
+            >
+          </li>
+          <li>
+            <a href="products-category.html?category=fine-art">Fine Art</a>
+          </li>
+          <li>
+            <a href="products-category.html?category=floor-coverings"
+              >Floor Coverings</a
+            >
+          </li>
+        </ul>
+      </div>
+      <div class="product-categories-images"></div>
+    </div>
+    <div class="category-overlay" id="menu_collections">
+      <div class="product-categories-container">
+        <ul class="product-categories">
+          <h3>Editorial Edits</h3>
+          <li>
+            <a href="products-category.html?category=settees-sofas"
+              >Modernist Restraint</a
+            >
+          </li>
+          <li>
+            <a href="products-category.html?category=settees-sofas"
+              >Nomadic Elegance</a
+            >
+          </li>
+          <li>
+            <a href="products-category.html?category=settees-sofas"
+              >Quiet Luxury</a
+            >
+          </li>
+        </ul>
+        <ul class="product-categories">
+          <h3>Season's Focus</h3>
+          <li>
+            <a href="products-category.html?category=settees-sofas"
+              >Spring/Summer '26</a
+            >
+          </li>
+          <li>
+            <a href="products-category.html?category=settees-sofas"
+              >Autumn/Winter '26</a
+            >
+          </li>
+          <li>
+            <a href="products-category.html?category=settees-sofas"
+              >Signature Pieces</a
+            >
+          </li>
+        </ul>
+      </div>
+      <div class="product-categories-images"></div>
+    </div>
+    <div class="search-tab-container" id="search_tab">
+      <svg
+        viewBox="0 0 3.8501687 3.8464062"
+        version="1.1"
+        id="svg1"
+        xml:space="preserve"
+        xmlns="http://www.w3.org/2000/svg"
+        xmlns:svg="http://www.w3.org/2000/svg"
+        class="search-item"
+      >
+        <defs id="defs1" />
+        <g id="layer1" transform="translate(-174.84824,-117.67499)">
+          <path
+            id="path1"
+            style="opacity: 1; fill: #ebe3e3; stroke-width: 1.08136"
+            d="m 176.48018,117.67499 c -0.90136,-1.6e-4 -1.6321,0.73058 -1.63194,1.63194 1.3e-4,0.90116 0.73078,1.63158 1.63194,1.63142 0.90096,-1.3e-4 1.6313,-0.73046 1.63143,-1.63142 1.6e-4,-0.90116 -0.73027,-1.63181 -1.63143,-1.63194 z m -0.0184,0.17397 c 0.76722,-7e-5 1.45525,0.66182 1.45513,1.45497 -1.5e-4,0.79294 -0.67866,1.44648 -1.44569,1.44641 -0.76703,7e-5 -1.43611,-0.62515 -1.43626,-1.41809 -1.2e-4,-0.79315 0.6596,-1.48336 1.42682,-1.48329 z"
+          />
+          <path
+            style="opacity: 1; fill: #ebe3e3; stroke-width: 1.265"
+            d="m 177.47658,120.53908 0.97565,0.98231 0.24618,-0.19694 -0.99879,-0.99176 z"
+            id="path2"
+          />
+        </g>
+      </svg>
+      <span class="search-item">Search items from Woode...</span>
+    </div>
+    <div class="cart-tab-container" id="cart_tab">
+      <h2>Your selection</h2>
+      <div class="cart-tab-line"></div>
+      <div class="investment-counter">Investment: 0</div>
+      <div class="pieces-counter">Pieces: 0</div>
+      <button class="contact-concierge-btn">Contact Concierge</button>
+    </div>
+    <button class="cart-tab-close-btn" id="cart_close_btn">Close</button>
+    <div class="cart-tab-overlay"></div>
+    <div class="grid">
+      <div class="square"></div>
+      <div class="square"></div>
+      <div class="square"></div>
+      <div class="square"></div>
+      <div class="square"></div>
+      <div class="square"></div>
+      <div class="square"></div>
+      <div class="square"></div>
+      <div class="square"></div>
+      <div class="square"></div>
+      <div class="square"></div>
+      <div class="square"></div>
+      <div class="square"></div>
+      <div class="square"></div>
+      <div class="square"></div>
+      <div class="square"></div>
+      <div class="square"></div>
+      <div class="square"></div>
+      <div class="square"></div>
+      <div class="square"></div>
+    </div>
     <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/ScrollTrigger.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/ScrollSmoother.min.js"></script>
@@ -136,7 +358,6 @@
     <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/SplitText.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/MorphSVGPlugin.min.js"></script>
     <script src="https://unpkg.com/@barba/core"></script>
-
     <script type="module" src="/src/main.js"></script>
   </body>
 </html>
