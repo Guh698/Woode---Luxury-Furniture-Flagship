@@ -1,3 +1,7 @@
+if ("scrollRestoration" in history) {
+  history.scrollRestoration = "manual";
+}
+
 import { createClient } from "@sanity/client";
 import imageUrlBuilder from "@sanity/image-url";
 import "./style.css";
@@ -97,7 +101,6 @@ function initSmoother(contentEl) {
   });
 }
 
-//entendi :)
 async function populateHomeData(container) {
   try {
     const data = await client.fetch(homeQuery);
@@ -218,7 +221,6 @@ async function populateHomeData(container) {
       if (el && imgData) el.src = urlFor(imgData).url();
     };
 
-    assignImage(".the-edit-first-photo", data.editFirstImage);
     assignImage(".the-edit-first-hovered-photo", data.hoverimg1);
     assignImage(".the-edit-second-photo", data.editSecondImage);
     assignImage(".the-edit-second-hovered-photo", data.hoverimg2);
@@ -237,7 +239,6 @@ async function populateHomeData(container) {
   }
 }
 
-//entendi :)
 function initHomeAnimations(container) {
   homeAbortController = new AbortController();
   const { signal } = homeAbortController;
@@ -394,6 +395,14 @@ function initHomeAnimations(container) {
                 scrub: true,
               },
             });
+
+            img.addEventListener("mouseenter", () => {
+              gsap.to(img, { scale: 1.1 });
+            });
+
+            img.addEventListener("mouseleave", () => {
+              gsap.to(img, { scale: 1 });
+            });
           });
         },
       });
@@ -401,13 +410,11 @@ function initHomeAnimations(container) {
   }, container);
 }
 
-//entendi, mas devo pesquisar.
 function killHome() {
   if (homeCtx) homeCtx.revert();
   if (homeAbortController) homeAbortController.abort();
 }
 
-//eu que fiz :)
 function initProductPageAnimations(container) {
   productPageCtx = gsap.context(() => {
     const globalHeader = document.querySelector("header");
@@ -466,12 +473,10 @@ function initProductPageAnimations(container) {
   });
 }
 
-//eu que fiz :)
 function killProductPage() {
   if (productPageCtx) productPageCtx.revert();
 }
 
-//entendi, mas não em detalhes.
 function initProductsCategory(container) {
   productsCtx = gsap.context(() => {
     const cards = gsap.utils.toArray(".product-card");
@@ -541,7 +546,6 @@ function initProductsCategory(container) {
   }, container);
 }
 
-//entendi, mas devo pesquisar.
 function killProductsCategory() {
   if (productsCtx) productsCtx.revert();
 }
@@ -886,7 +890,7 @@ barba.init({
   views: [
     {
       namespace: "home",
-      beforeEnter() {
+      async beforeEnter(data) {
         gsap.set(["header, footer"], { opacity: 1, pointerEvents: "auto" });
         gsap.set(".header-background", { y: "-100%" });
         document.body.classList.add("is-home");
@@ -894,9 +898,9 @@ barba.init({
         document.body.style.overflow = "";
         document.body.style.height = "";
         document.body.style.touchAction = "";
-      },
-      async afterEnter(data) {
         await populateHomeData(data.next.container);
+      },
+      afterEnter(data) {
         initSmoother(data.next.container);
         initHomeAnimations(data.next.container);
         setTimeout(() => ScrollTrigger.refresh(), 600);
@@ -907,49 +911,50 @@ barba.init({
     },
     {
       namespace: "product-page",
-      beforeEnter() {
+      async beforeEnter(data) {
         document.body.classList.add("is-home");
         document.body.classList.remove("is-product");
         document.body.style.overflow = "";
         document.body.style.height = "";
         document.body.style.touchAction = "";
         gsap.set(".header-background", { y: 0 });
-      },
-      async afterEnter(data) {
+
         const urlParams = new URLSearchParams(window.location.search);
-        initSmoother(data.next.container);
+
         const currentSlug = urlParams.get("slug");
 
         if (currentSlug) {
+          const nextDom = data.next.container;
           const query = `*[_type == "product" && slug.current == "${currentSlug}"][0]`;
           const productData = await client.fetch(query);
 
-          document.querySelector(".product-page-hero h1").textContent =
+          nextDom.querySelector(".product-page-hero h1").textContent =
             productData.name;
-          document.querySelector(".product-price").textContent =
+          nextDom.querySelector(".product-price").textContent =
             `$${productData.price} USD`;
-          document.querySelector(".product-materials").textContent =
+          nextDom.querySelector(".product-materials").textContent =
             productData.materials;
-          document.querySelector(".product-dimensions").textContent =
+          nextDom.querySelector(".product-dimensions").textContent =
             productData.dimensions;
           if (productData.mainImage) {
-            document.querySelector(".product-main-photo").src = urlFor(
+            nextDom.querySelector(".product-main-photo").src = urlFor(
               productData.mainImage,
             ).url();
           }
-          document.querySelector(".product-description").textContent =
+          nextDom.querySelector(".product-description").textContent =
             productData.shortDescription;
-          document.querySelector(".product-details-description").textContent =
+          nextDom.querySelector(".product-details-description").textContent =
             productData.detailedDescription;
         }
+      },
+      afterEnter(data) {
+        initSmoother(data.next.container);
 
-        initHomeAnimations(data.next.container);
         initProductPageAnimations(data.next.container);
 
         setTimeout(() => ScrollTrigger.refresh(), 600);
       },
       afterLeave() {
-        killHome();
         killProductPage();
         gsap.set(".header-background", { y: "-100%" });
       },
@@ -976,7 +981,7 @@ barba.init({
     },
     {
       namespace: "product-categories",
-      beforeEnter() {
+      async beforeEnter(data) {
         document.body.classList.remove("is-home");
         document.body.classList.add("is-product");
         document.body.style.overflow = "hidden";
@@ -984,12 +989,13 @@ barba.init({
         document.body.style.touchAction = "none";
         gsap.set("header", { opacity: 0, pointerEvents: "none" });
         gsap.set("footer", { opacity: 0, pointerEvents: "none" });
-      },
-      async afterEnter(data) {
+
         const urlParams = new URLSearchParams(window.location.search);
         const currentCategory = urlParams.get("category");
 
         if (currentCategory) {
+          const nextDom = data.next.container;
+
           const query = `*[_type == "product" && category == "${currentCategory}"]{
             name,
             "slug": slug.current,
@@ -998,14 +1004,14 @@ barba.init({
 
           const categoryProducts = await client.fetch(query);
 
-          const titleEl = document.querySelector(".products-category-title");
+          const titleEl = nextDom.querySelector(".products-category-title");
           if (titleEl) {
             titleEl.textContent = currentCategory
               .replace(/-/g, " ")
               .replace(/\b\w/g, (l) => l.toUpperCase());
           }
 
-          const cards = document.querySelectorAll(".product-card");
+          const cards = nextDom.querySelectorAll(".product-card");
 
           categoryProducts.forEach((product, index) => {
             if (cards[index]) {
@@ -1018,7 +1024,8 @@ barba.init({
             }
           });
         }
-
+      },
+      afterEnter(data) {
         initProductsCategory(data.next.container);
       },
       afterLeave() {
@@ -1048,7 +1055,10 @@ barba.init({
         const done = this.async();
         document.body.classList.add("is-transitioning");
 
-        if (smoother) smoother.paused(true);
+        if (smoother) {
+          smoother.scrollTo(smoother.scrollTop(), false);
+          smoother.paused(true);
+        }
 
         resetHeaderState();
 

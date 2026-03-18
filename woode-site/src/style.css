@@ -28,8 +28,8 @@ body {
 }
 
 body.is-transitioning {
-  overflow: hidden !important;
-  pointer-events: none !important;
+  overflow: hidden;
+  pointer-events: none;
 }
 
 body.is-home {
