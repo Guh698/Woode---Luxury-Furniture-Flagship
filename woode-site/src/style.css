@@ -543,6 +543,7 @@ button {
   color: var(--dark-color);
   text-align: justify;
   margin-top: 6rem;
+  overflow-x: hidden;
 }
 
 .product-page-hero h1 {
@@ -1107,7 +1108,7 @@ footer span {
   }
 
   .product-page-hero h1 {
-    font-size: 7rem;
+    font-size: 5rem;
   }
 
   .product-price {

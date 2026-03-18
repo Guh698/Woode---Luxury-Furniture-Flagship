@@ -81,6 +81,7 @@ function initSmoother(contentEl) {
     content: contentEl,
     smooth: 1,
     effects: true,
+    smoothTouch: 0.1,
   });
 }
 
