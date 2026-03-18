@@ -76,12 +76,24 @@ const homeQuery = `*[_type == "home"][0]{
 
 function initSmoother(contentEl) {
   if (ScrollSmoother.get()) ScrollSmoother.get().kill();
-  smoother = ScrollSmoother.create({
-    wrapper: ".smooth-wrapper",
-    content: contentEl,
-    smooth: 1,
-    effects: true,
-    /*smoothTouch: 0.1,*/
+  ScrollTrigger.matchMedia({
+    "(min-width: 1024px)": function () {
+      smoother = ScrollSmoother.create({
+        wrapper: ".smooth-wrapper",
+        content: contentEl,
+        smooth: 1,
+        effects: false,
+      });
+    },
+
+    "(max-width: 1023px)": function () {
+      smoother = ScrollSmoother.create({
+        wrapper: ".smooth-wrapper",
+        content: contentEl,
+        smooth: 1,
+        effects: true,
+      });
+    },
   });
 }
 
@@ -293,41 +305,6 @@ function initHomeAnimations(container) {
     const theEdit = container.querySelector(".the-edit");
     const animWrapper = container.querySelector(".animation-wrapper");
     if (theEdit && animWrapper) {
-      imgContainers.forEach((imgContainer) => {
-        const img = imgContainer.querySelector("img");
-        const hoveredImg = imgContainer.querySelector(".hovered-img");
-
-        gsap.to(img, {
-          y: "10%",
-          ease: "none",
-          scrollTrigger: {
-            trigger: imgContainer,
-            start: "top bottom",
-            end: "bottom top",
-            scrub: true,
-          },
-        });
-
-        gsap.to(hoveredImg, {
-          y: "10%",
-          ease: "none",
-          scrollTrigger: {
-            trigger: imgContainer,
-            start: "top bottom",
-            end: "bottom top",
-            scrub: true,
-          },
-        });
-
-        img.addEventListener("mouseenter", () => {
-          gsap.set(img, { opacity: 0 });
-        });
-
-        img.addEventListener("mouseleave", () => {
-          gsap.set(img, { opacity: 1 });
-        });
-      });
-
       ScrollTrigger.matchMedia({
         "(min-width: 1024px)": function () {
           const extraHeight = theEdit.offsetHeight - window.innerHeight;
@@ -352,9 +329,73 @@ function initHomeAnimations(container) {
             .to(".hero", { filter: "blur(3px)", ease: "none" }, "<");
 
           const imgContainers = container.querySelectorAll(".img-container");
+
+          imgContainers.forEach((imgContainer) => {
+            const img = imgContainer.querySelector("img");
+            const hoveredImg = imgContainer.querySelector(".hovered-img");
+
+            gsap.to(img, {
+              y: "10%",
+              ease: "none",
+              scrollTrigger: {
+                trigger: imgContainer,
+                start: "top bottom",
+                end: "bottom top",
+                scrub: true,
+              },
+            });
+
+            gsap.to(hoveredImg, {
+              y: "10%",
+              ease: "none",
+              scrollTrigger: {
+                trigger: imgContainer,
+                start: "top bottom",
+                end: "bottom top",
+                scrub: true,
+              },
+            });
+
+            img.addEventListener("mouseenter", () => {
+              gsap.set(img, { opacity: 0 });
+            });
+
+            img.addEventListener("mouseleave", () => {
+              gsap.set(img, { opacity: 1 });
+            });
+          });
         },
 
-        "(max-width: 1023px)": function () {},
+        "(max-width: 1023px)": function () {
+          const imgContainers = container.querySelectorAll(".img-container");
+
+          imgContainers.forEach((imgContainer) => {
+            const img = imgContainer.querySelector("img");
+            const hoveredImg = imgContainer.querySelector(".hovered-img");
+
+            gsap.to(img, {
+              y: "10%",
+              ease: "none",
+              scrollTrigger: {
+                trigger: imgContainer,
+                start: "top bottom",
+                end: "bottom top",
+                scrub: true,
+              },
+            });
+
+            gsap.to(hoveredImg, {
+              y: "10%",
+              ease: "none",
+              scrollTrigger: {
+                trigger: imgContainer,
+                start: "top bottom",
+                end: "bottom top",
+                scrub: true,
+              },
+            });
+          });
+        },
       });
     }
   }, container);
