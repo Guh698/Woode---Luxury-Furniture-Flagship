@@ -81,7 +81,7 @@ function initSmoother(contentEl) {
     content: contentEl,
     smooth: 1,
     effects: true,
-    smoothTouch: 0.1,
+    /*smoothTouch: 0.1,*/
   });
 }
 
@@ -293,13 +293,13 @@ function initHomeAnimations(container) {
     const theEdit = container.querySelector(".the-edit");
     const animWrapper = container.querySelector(".animation-wrapper");
     if (theEdit && animWrapper) {
-      const extraHeight = theEdit.offsetHeight - window.innerHeight;
-      if (extraHeight > 0) {
-        gsap.set(animWrapper, { marginBottom: extraHeight });
-      }
-
       ScrollTrigger.matchMedia({
         "(min-width: 1024px)": function () {
+          const extraHeight = theEdit.offsetHeight - window.innerHeight;
+          if (extraHeight > 0) {
+            gsap.set(animWrapper, { marginBottom: extraHeight });
+          }
+
           let theEditTl = gsap.timeline({
             scrollTrigger: {
               trigger: ".animation-wrapper",
@@ -355,7 +355,7 @@ function initHomeAnimations(container) {
         },
 
         "(max-width: 1023px)": function () {
-          let theEditTl = gsap.timeline({
+          /*  let theEditTl = gsap.timeline({
             scrollTrigger: {
               trigger: ".animation-wrapper",
               start: "top top",
@@ -368,7 +368,7 @@ function initHomeAnimations(container) {
           theEditTl
             .to(".the-edit", { y: 0, ease: "none" })
             .to(".hero-background", { scale: 1.1, ease: "none" }, "<")
-            .to(".hero", { filter: "blur(3px)", ease: "none" }, "<");
+            .to(".hero", { filter: "blur(3px)", ease: "none" }, "<");*/
         },
       });
     }

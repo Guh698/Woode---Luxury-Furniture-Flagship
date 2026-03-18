@@ -976,7 +976,9 @@ footer span {
   }
 
   .the-edit {
+    position: relative;
     height: 350vh;
+    transform: translateY(0);
   }
 
   .the-edit h2 {
