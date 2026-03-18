@@ -1015,6 +1015,10 @@ footer span {
     height: 100%;
   }
 
+  .hovered-img {
+    display: none;
+  }
+
   .the-edit-second-container {
     display: flex;
     height: 150vh;
