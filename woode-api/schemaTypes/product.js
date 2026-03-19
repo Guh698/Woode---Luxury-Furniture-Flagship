@@ -82,7 +82,13 @@ export default {
     },
     {
       name: 'mainImage',
-      title: 'Main Photo (Hero/Thumbnail)',
+      title: 'Main Photo (Cover/Thumbnail)',
+      type: 'image',
+      options: {hotspot: true},
+    },
+    {
+      name: 'highlightImage',
+      title: 'Highlight Photo on product-page',
       type: 'image',
       options: {hotspot: true},
     },

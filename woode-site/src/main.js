@@ -38,42 +38,49 @@ const homeQuery = `*[_type == "home"][0]{
     name,
     "slug": slug.current,
     mainImage,
+    highlightImage,
     description
   }, hoverimg1, editFirstSlug,  
   editSecondProduct->{
     name,
     "slug": slug.current,
     mainImage,
+    highlightImage,
     description
   }, hoverimg2, editSecondSlug,  
   editThirdProduct->{
     name,
     "slug": slug.current,
     mainImage,
+    highlightImage,
     description
   }, hoverimg3, editThirdSlug, 
   editFourthProduct->{
     name,
     "slug": slug.current,
     mainImage,
+    highlightImage,
     description
   }, hoverimg4, editFourthSlug,
   editFifthProduct->{
     name,
     "slug": slug.current,
     mainImage,
+    highlightImage,
     description
   }, hoverimg5, editFifthSlug, 
   editSixthProduct->{
     name,
     "slug": slug.current,
     mainImage,
+    highlightImage,
     description
   }, hoverimg6, editSixthSlug, 
   editSeventhProduct->{
     name,
     "slug": slug.current,
     mainImage,
+    highlightImage,
     description
   }, hoverimg7, editSeventhSlug, editSecondText
 }`;
@@ -714,6 +721,16 @@ function initGlobalHeader() {
               ease: "expo.inOut",
             },
             0,
+          )
+          .to(
+            ".categories-tab-overlay",
+            {
+              opacity: 0,
+              pointerEvents: "none",
+              duration: 0.8,
+              ease: "expo.inOut",
+            },
+            0,
           );
 
         cartTargetCloseBtn.addEventListener(
@@ -775,7 +792,18 @@ function initGlobalHeader() {
           duration: 0.4,
           stagger: -0.02,
           ease: "power2.in",
-        }).to(targetOverlay, { y: "-100%", duration: 0.8, ease: "expo.inOut" });
+        })
+          .to(targetOverlay, { y: "-100%", duration: 0.8, ease: "expo.inOut" })
+          .to(
+            ".categories-tab-overlay",
+            {
+              opacity: 0,
+              pointerEvents: "none",
+              duration: 0.8,
+              ease: "expo.inOut",
+            },
+            0,
+          );
       } else {
         isMenuAnimating = true;
 
@@ -800,17 +828,28 @@ function initGlobalHeader() {
             ease: "power2.in",
           }).set(oldOverlay, { y: "-100%" });
 
-          tl.set(targetOverlay, { y: "0%" }).fromTo(
-            targetItems,
-            { opacity: 0, y: 15 },
-            {
-              opacity: 1,
-              y: 0,
-              duration: 0.6,
-              stagger: 0.03,
-              ease: "power3.out",
-            },
-          );
+          tl.set(targetOverlay, { y: "0%" })
+            .fromTo(
+              targetItems,
+              { opacity: 0, y: 15 },
+              {
+                opacity: 1,
+                y: 0,
+                duration: 0.6,
+                stagger: 0.03,
+                ease: "power3.out",
+              },
+            )
+            .to(
+              ".categories-tab-overlay",
+              {
+                opacity: 1,
+                pointerEvents: "auto",
+                duration: 0.8,
+                ease: "expo.inOut",
+              },
+              0,
+            );
         } else {
           const tl = gsap.timeline({
             onComplete: () => {
@@ -825,17 +864,28 @@ function initGlobalHeader() {
             y: "0%",
             duration: 0.8,
             ease: "expo.inOut",
-          }).to(
-            targetItems,
-            {
-              opacity: 1,
-              y: 0,
-              duration: 0.6,
-              stagger: 0.04,
-              ease: "power3.out",
-            },
-            "-=0.3",
-          );
+          })
+            .to(
+              targetItems,
+              {
+                opacity: 1,
+                y: 0,
+                duration: 0.6,
+                stagger: 0.04,
+                ease: "power3.out",
+              },
+              "-=0.3",
+            )
+            .to(
+              ".categories-tab-overlay",
+              {
+                opacity: 1,
+                pointerEvents: "auto",
+                duration: 0.8,
+                ease: "expo.inOut",
+              },
+              0,
+            );
         }
       }
     });
@@ -908,6 +958,12 @@ barba.init({
       afterLeave() {
         killHome();
       },
+      beforeLeave() {
+        gsap.to(".categories-tab-overlay", {
+          opacity: 0,
+          pointerEvents: "none",
+        });
+      },
     },
     {
       namespace: "product-page",
@@ -936,9 +992,9 @@ barba.init({
             productData.materials;
           nextDom.querySelector(".product-dimensions").textContent =
             productData.dimensions;
-          if (productData.mainImage) {
+          if (productData.highlightImage) {
             nextDom.querySelector(".product-main-photo").src = urlFor(
-              productData.mainImage,
+              productData.highlightImage,
             ).url();
           }
           nextDom.querySelector(".product-description").textContent =
@@ -957,6 +1013,12 @@ barba.init({
       afterLeave() {
         killProductPage();
         gsap.set(".header-background", { y: "-100%" });
+      },
+      beforeLeave() {
+        gsap.to(".categories-tab-overlay", {
+          opacity: 0,
+          pointerEvents: "none",
+        });
       },
     },
     {
