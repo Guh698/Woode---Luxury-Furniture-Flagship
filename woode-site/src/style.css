@@ -982,9 +982,17 @@ footer span {
   .hero-timers-container {
     position: absolute;
     bottom: 2rem;
-    width: 100%;
+    flex-direction: row;
+    width: 50%;
     height: 0.7rem;
-    border: 1px solid #fff;
+  }
+
+  .timer-bar {
+    clip-path: polygon(0% 0%, 0% 0%, 0% 100%, 0% 100%);
+  }
+
+  .hovered-img {
+    display: none;
   }
 
   .the-edit {

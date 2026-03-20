@@ -256,10 +256,6 @@ function initHomeAnimations(container) {
       gsap.from(sloganElement, { opacity: 0, y: 30, duration: 1, delay: 0.5 });
     }
 
-    const images = container.querySelectorAll("#hero_background img");
-    const timerContainer = container.querySelector("#hero_timers_container");
-    const globalHeaderBg = document.querySelector(".header-background");
-
     ScrollTrigger.create({
       trigger: ".the-edit",
       start: "top center",
@@ -267,48 +263,9 @@ function initHomeAnimations(container) {
       onLeaveBack: () => gsap.to(globalHeaderBg, { y: "-100%" }),
     });
 
-    if (timerContainer && images.length > 0) {
-      timerContainer.innerHTML = "";
-      images.forEach(() => {
-        const bar = document.createElement("div");
-        bar.classList.add("timer-bar");
-        timerContainer.appendChild(bar);
-      });
-
-      const timers = container.querySelectorAll(".timer-bar");
-      if (images.length === 1) {
-        gsap.set(images[0], { opacity: 1 });
-        gsap.set(timers[0], {
-          clipPath: "polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%)",
-        });
-      } else {
-        gsap.set(images, { zIndex: 0, opacity: 0 });
-        gsap.set(images[0], { zIndex: 1, opacity: 1 });
-        const tl = gsap.timeline({ repeat: -1 });
-
-        images.forEach((img, index) => {
-          const nextImg = images[index + 1] || images[0];
-          const currentTimer = timers[index];
-          const isLast = index === images.length - 1;
-
-          tl.to(currentTimer, {
-            clipPath: "polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%)",
-            duration: 3.7,
-            ease: "none",
-          })
-            .set(nextImg, { zIndex: 2 })
-            .to(nextImg, { duration: 1.7, opacity: 1, ease: "power2.inOut" })
-            .set(img, { zIndex: 0, opacity: 0 })
-            .set(nextImg, { zIndex: 1 });
-
-          if (isLast) {
-            tl.set(timers, {
-              clipPath: "polygon(0% 0%, 100% 0%, 100% 0%, 0% 0%)",
-            });
-          }
-        });
-      }
-    }
+    const images = container.querySelectorAll("#hero_background img");
+    const timerContainer = container.querySelector("#hero_timers_container");
+    const globalHeaderBg = document.querySelector(".header-background");
 
     const theEdit = container.querySelector(".the-edit");
     const animWrapper = container.querySelector(".animation-wrapper");
@@ -318,6 +275,53 @@ function initHomeAnimations(container) {
           const extraHeight = theEdit.offsetHeight - window.innerHeight;
           if (extraHeight > 0) {
             gsap.set(animWrapper, { marginBottom: extraHeight });
+          }
+
+          if (timerContainer && images.length > 0) {
+            timerContainer.innerHTML = "";
+            images.forEach(() => {
+              const bar = document.createElement("div");
+              bar.classList.add("timer-bar");
+              timerContainer.appendChild(bar);
+            });
+
+            const timers = container.querySelectorAll(".timer-bar");
+            if (images.length === 1) {
+              gsap.set(images[0], { opacity: 1 });
+              gsap.set(timers[0], {
+                clipPath: "polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%)",
+              });
+            } else {
+              gsap.set(images, { zIndex: 0, opacity: 0 });
+              gsap.set(images[0], { zIndex: 1, opacity: 1 });
+              const tl = gsap.timeline({ repeat: -1 });
+
+              images.forEach((img, index) => {
+                const nextImg = images[index + 1] || images[0];
+                const currentTimer = timers[index];
+                const isLast = index === images.length - 1;
+
+                tl.to(currentTimer, {
+                  clipPath: "polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%)",
+                  duration: 3.7,
+                  ease: "none",
+                })
+                  .set(nextImg, { zIndex: 2 })
+                  .to(nextImg, {
+                    duration: 1.7,
+                    opacity: 1,
+                    ease: "power2.inOut",
+                  })
+                  .set(img, { zIndex: 0, opacity: 0 })
+                  .set(nextImg, { zIndex: 1 });
+
+                if (isLast) {
+                  tl.set(timers, {
+                    clipPath: "polygon(0% 0%, 100% 0%, 100% 0%, 0% 0%)",
+                  });
+                }
+              });
+            }
           }
 
           let theEditTl = gsap.timeline({
@@ -375,6 +379,53 @@ function initHomeAnimations(container) {
         },
 
         "(max-width: 1023px)": function () {
+          if (timerContainer && images.length > 0) {
+            timerContainer.innerHTML = "";
+            images.forEach(() => {
+              const bar = document.createElement("div");
+              bar.classList.add("timer-bar");
+              timerContainer.appendChild(bar);
+            });
+
+            const timers = container.querySelectorAll(".timer-bar");
+            if (images.length === 1) {
+              gsap.set(images[0], { opacity: 1 });
+              gsap.set(timers[0], {
+                clipPath: "polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%)",
+              });
+            } else {
+              gsap.set(images, { zIndex: 0, opacity: 0 });
+              gsap.set(images[0], { zIndex: 1, opacity: 1 });
+              const tl = gsap.timeline({ repeat: -1 });
+
+              images.forEach((img, index) => {
+                const nextImg = images[index + 1] || images[0];
+                const currentTimer = timers[index];
+                const isLast = index === images.length - 1;
+
+                tl.to(currentTimer, {
+                  clipPath: "polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%)",
+                  duration: 3.7,
+                  ease: "none",
+                })
+                  .set(nextImg, { zIndex: 2 })
+                  .to(nextImg, {
+                    duration: 1.7,
+                    opacity: 1,
+                    ease: "power2.inOut",
+                  })
+                  .set(img, { zIndex: 0, opacity: 0 })
+                  .set(nextImg, { zIndex: 1 });
+
+                if (isLast) {
+                  tl.set(timers, {
+                    clipPath: "polygon(0% 0%, 0% 0%, 0% 100%, 0% 100%)",
+                  });
+                }
+              });
+            }
+          }
+
           const imgContainers = container.querySelectorAll(".img-container");
 
           imgContainers.forEach((imgContainer) => {
