@@ -976,6 +976,21 @@ footer span {
     transform-origin: center;
   }
 
+  .cart-tab-container {
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-areas:
+      "title              title "
+      ".                  .     "
+      "line               line  "
+      "investment         pieces";
+    width: 100%;
+  }
+
+  .cart-tab-close-btn {
+    top: 4rem;
+    right: 2rem;
+  }
+
   #mobile_menu_link {
     transform: scaleX(1.3);
     display: flex;
