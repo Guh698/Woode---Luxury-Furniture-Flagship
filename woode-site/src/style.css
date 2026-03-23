@@ -987,8 +987,12 @@ footer span {
   }
 
   .cart-tab-close-btn {
-    top: 4rem;
+    top: 3rem;
     right: 2rem;
+  }
+
+  .cart-tab-container h2 {
+    font-size: 2.7rem;
   }
 
   #mobile_menu_link {
