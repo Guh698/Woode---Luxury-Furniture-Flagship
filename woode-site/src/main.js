@@ -972,86 +972,64 @@ function initGlobalHeader() {
 
   if (mobileMenuBtn) {
     mobileMenuBtn.addEventListener("click", () => {
+      if (menuAnimating) return;
+
+      menuAnimating = true;
+
       if (!activedMenu) {
-        if (!menuAnimating) {
-          menuAnimating = true;
-          document.body.style.overflow = "hidden";
+        document.body.style.overflow = "hidden";
 
-          gsap.to("#path3", {
-            y: 0.71,
-            rotation: 50,
-            transformOrigin: "50% 50%",
-          });
-          gsap.to("#path3-9", {
-            y: -0.71,
-            rotation: -50,
-            transformOrigin: "50% 50%",
-          });
+        gsap.to("#path3", {
+          y: 0.71,
+          rotation: 50,
+          transformOrigin: "50% 50%",
+        });
+        gsap.to("#path3-9", {
+          y: -0.71,
+          rotation: -50,
+          transformOrigin: "50% 50%",
+        });
 
-          let menuTimeline = gsap.timeline({
-            onComplete() {
-              activedMenu = true;
-              menuAnimating = false;
+        let menuTimeline = gsap.timeline({
+          onComplete() {
+            activedMenu = true;
+            menuAnimating = false;
+          },
+        });
+
+        menuTimeline
+          .to(mobileMenuTab, { x: 0, duration: 0.8, ease: "expo.inOut" })
+          .to(
+            mobileTargetItems,
+            {
+              opacity: 1,
+              y: 0,
+              duration: 0.4,
+              stagger: { each: -0.02, from: "top" },
+              ease: "power2.in",
             },
-          });
-
-          menuTimeline
-            .to(mobileMenuTab, { x: 0, duration: 0.8, ease: "expo.inOut" })
-            .to(
-              mobileTargetItems,
-              {
-                opacity: 1,
-                y: 0,
-                duration: 0.4,
-                stagger: {
-                  each: -0.02,
-                  from: "top",
-                },
-                ease: "power2.in",
-              },
-              "-=0.3",
-            );
-        } else {
-          return;
-        }
+            "-=0.3",
+          );
       } else {
-        if (!menuAnimating) {
-          menuAnimating = true;
-          gsap.to("#path3", {
-            y: 0,
-            rotation: 0,
-            transformOrigin: "50% 50%",
-          });
-          gsap.to("#path3-9", {
-            y: 0,
-            rotation: 0,
-            transformOrigin: "50% 50%",
-          });
-          let ClosingMenuTimeline = gsap.timeline({
-            onComplete() {
-              menuAnimating = false;
-              activedMenu = false;
-              gsap.set(mobileTargetItems, { y: 10 });
-              document.body.style.overflow = "";
-            },
-          });
-          ClosingMenuTimeline.to(mobileTargetItems, {
-            opacity: 0,
-            y: -10,
-            duration: 0.4,
-            stagger: {
-              each: -0.02,
-              from: "bottom",
-            },
-            ease: "power2.in",
-          }).to(mobileMenuTab, {
-            x: "100%",
-            duration: 0.8,
-            ease: "expo.inOut",
-          });
-        } else {
-          return;
-        }
+        gsap.to("#path3", { y: 0, rotation: 0, transformOrigin: "50% 50%" });
+        gsap.to("#path3-9", { y: 0, rotation: 0, transformOrigin: "50% 50%" });
+
+        let ClosingMenuTimeline = gsap.timeline({
+          onComplete() {
+            activedMenu = false;
+            menuAnimating = false;
+            gsap.set(mobileTargetItems, { y: 10 });
+            document.body.style.overflow = "";
+          },
+        });
+
+        ClosingMenuTimeline.to(mobileTargetItems, {
+          opacity: 0,
+          y: -10,
+          duration: 0.4,
+          stagger: { each: -0.02, from: "bottom" },
+          ease: "power2.in",
+        }).to(mobileMenuTab, { x: "100%", duration: 0.8, ease: "expo.inOut" });
       }
     });
   }
