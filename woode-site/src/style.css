@@ -972,9 +972,14 @@ footer span {
     display: none;
   }
 
+  header svg {
+    transform-origin: center;
+  }
+
   #mobile_menu_link {
     transform: scaleX(1.3);
-    display: block;
+    display: flex;
+    transform-origin: center;
   }
 
   .mobile-menu {

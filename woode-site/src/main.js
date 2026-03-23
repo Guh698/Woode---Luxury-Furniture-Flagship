@@ -975,6 +975,19 @@ function initGlobalHeader() {
       if (!activedMenu) {
         if (!menuAnimating) {
           menuAnimating = true;
+          document.body.style.overflow = "hidden";
+
+          gsap.to("#path3", {
+            y: 0.71,
+            rotation: 50,
+            transformOrigin: "50% 50%",
+          });
+          gsap.to("#path3-9", {
+            y: -0.71,
+            rotation: -50,
+            transformOrigin: "50% 50%",
+          });
+
           let menuTimeline = gsap.timeline({
             onComplete() {
               activedMenu = true;
@@ -1004,11 +1017,22 @@ function initGlobalHeader() {
       } else {
         if (!menuAnimating) {
           menuAnimating = true;
+          gsap.to("#path3", {
+            y: 0,
+            rotation: 0,
+            transformOrigin: "50% 50%",
+          });
+          gsap.to("#path3-9", {
+            y: 0,
+            rotation: 0,
+            transformOrigin: "50% 50%",
+          });
           let ClosingMenuTimeline = gsap.timeline({
             onComplete() {
               menuAnimating = false;
               activedMenu = false;
               gsap.set(mobileTargetItems, { y: 10 });
+              document.body.style.overflow = "";
             },
           });
           ClosingMenuTimeline.to(mobileTargetItems, {
