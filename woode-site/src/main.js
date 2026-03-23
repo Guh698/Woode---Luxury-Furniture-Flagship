@@ -960,6 +960,77 @@ function initGlobalHeader() {
       gsap.to(line, { x: "100%", duration: 0.4, overwrite: true }),
     );
   });
+
+  const mobileMenuBtn = document.getElementById("mobile_menu_link");
+  const mobileMenuTab = document.getElementById("mobile_menu");
+  const mobileTargetItems = mobileMenuTab.querySelectorAll(
+    ".category-item, .contact-link",
+  );
+
+  let activedMenu = false;
+  let menuAnimating = false;
+
+  if (mobileMenuBtn) {
+    mobileMenuBtn.addEventListener("click", () => {
+      if (!activedMenu) {
+        if (!menuAnimating) {
+          menuAnimating = true;
+          let menuTimeline = gsap.timeline({
+            onComplete() {
+              activedMenu = true;
+              menuAnimating = false;
+            },
+          });
+
+          menuTimeline
+            .to(mobileMenuTab, { x: 0, duration: 0.8, ease: "expo.inOut" })
+            .to(
+              mobileTargetItems,
+              {
+                opacity: 1,
+                y: 0,
+                duration: 0.4,
+                stagger: {
+                  each: -0.02,
+                  from: "top",
+                },
+                ease: "power2.in",
+              },
+              "-=0.3",
+            );
+        } else {
+          return;
+        }
+      } else {
+        if (!menuAnimating) {
+          menuAnimating = true;
+          let ClosingMenuTimeline = gsap.timeline({
+            onComplete() {
+              menuAnimating = false;
+              activedMenu = false;
+              gsap.set(mobileTargetItems, { y: 10 });
+            },
+          });
+          ClosingMenuTimeline.to(mobileTargetItems, {
+            opacity: 0,
+            y: -10,
+            duration: 0.4,
+            stagger: {
+              each: -0.02,
+              from: "bottom",
+            },
+            ease: "power2.in",
+          }).to(mobileMenuTab, {
+            x: "100%",
+            duration: 0.8,
+            ease: "expo.inOut",
+          });
+        } else {
+          return;
+        }
+      }
+    });
+  }
 }
 
 function resetHeaderState() {
