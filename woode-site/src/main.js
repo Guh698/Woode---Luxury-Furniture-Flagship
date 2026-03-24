@@ -626,7 +626,6 @@ function initProductsCategory(container) {
           currentY = 0;
         const ease = 0.08;
 
-        // CHANGED: Declared the correct height variables instead of width
         let itemHeight, totalHeight, wrapHeight;
 
         function updateMetrics() {
@@ -635,7 +634,6 @@ function initProductsCategory(container) {
 
           itemHeight = cardHeight + gap;
           totalHeight = itemHeight * cards.length;
-          // GSAP wrap utility for seamless vertical looping
           wrapHeight = gsap.utils.wrap(-itemHeight, totalHeight - itemHeight);
         }
 
@@ -645,11 +643,10 @@ function initProductsCategory(container) {
         Observer.create({
           target: window,
           type: "wheel,touch,pointer",
-          preventDefault: true, // Prevents native scroll
+          preventDefault: true,
           onChange: (self) => {
-            // Usually, for pure vertical mobile scrolling, you only need deltaY
             const velocity = self.deltaY;
-            targetY += velocity * 0.8;
+            targetY -= velocity * 0.8;
           },
         });
 
@@ -661,7 +658,6 @@ function initProductsCategory(container) {
             const actualY =
               offset > totalHeight - itemHeight ? offset - totalHeight : offset;
 
-            // GSAP set for vertical Y axis
             gsap.set(card, { y: actualY, force3D: true });
           });
         };
@@ -1105,7 +1101,6 @@ function initGlobalHeader() {
     });
   }
 
-  // We create a dedicated function to handle the closing animation
   function closeCategory(categoryLink) {
     if (!categoryLink) return;
 
@@ -1114,13 +1109,11 @@ function initGlobalHeader() {
     const subCategories = submenu.querySelectorAll(".sub-menu-sub-category");
     const iconVerticalLine = button.querySelector("path:nth-child(2)");
 
-    // Update ARIA state for accessibility
     button.setAttribute("aria-expanded", "false");
     categoryLink.isOpen = false;
 
     let tl = gsap.timeline();
 
-    // Animate the - back to a +
     gsap.to(iconVerticalLine, {
       rotation: 0,
       opacity: 1,
@@ -1129,7 +1122,6 @@ function initGlobalHeader() {
       ease: "power2.inOut",
     });
 
-    // Fade out the inner content, then collapse the container
     tl.to(subCategories, {
       opacity: 0,
       y: -10,
@@ -1153,28 +1145,24 @@ function initGlobalHeader() {
     const subCategories = submenu.querySelectorAll(".sub-menu-sub-category");
     const iconVerticalLine = button.querySelector("path:nth-child(2)");
 
-    // Attach the state directly to the element rather than using a scoped variable
     categoryLink.isOpen = false;
 
     gsap.set(subCategories, { opacity: 0, y: 15 });
 
     button.addEventListener("click", () => {
-      // Prevent clicking while animating to avoid layout jumps
       if (gsap.isTweening(submenu)) return;
 
       if (!categoryLink.isOpen) {
-        // ACCORDION LOGIC: If another category is open, close it first
         if (activeCategory && activeCategory !== categoryLink) {
           closeCategory(activeCategory);
         }
 
         categoryLink.isOpen = true;
-        activeCategory = categoryLink; // Set this item as the newly active one
+        activeCategory = categoryLink;
         button.setAttribute("aria-expanded", "true");
 
         let tl = gsap.timeline();
 
-        // Animate the + to a -
         gsap.to(iconVerticalLine, {
           rotation: 90,
           opacity: 0,
@@ -1183,7 +1171,6 @@ function initGlobalHeader() {
           ease: "power2.inOut",
         });
 
-        // Expand the container, then stagger in the content
         tl.to(submenu, {
           height: "auto",
           duration: 0.7,
@@ -1200,7 +1187,6 @@ function initGlobalHeader() {
           "-=0.4",
         );
       } else {
-        // If the user clicks the category that is ALREADY open, just close it
         closeCategory(categoryLink);
         activeCategory = null;
       }
@@ -1382,7 +1368,6 @@ barba.init({
               cards[index].innerHTML = `
                 <a href="product-page.html?slug=${product.slug}" style="display:block; width:100%; height:100%; text-decoration:none;">
                   <img src="${urlFor(product.mainImage).url()}" alt="${product.name}" style="width:100%; height:100%; object-fit:cover;">
-                  <h3 style="color: #ebe3e3; margin-top: 1rem; font-family: 'Bodoni Moda', serif; font-size: 1.5rem; font-weight: 400;">${product.name}</h3>
                 </a>
               `;
             }
