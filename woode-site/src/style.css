@@ -1010,6 +1010,8 @@ footer span {
 
   .mobile-menu {
     position: fixed;
+    display: flex;
+    flex-direction: column;
     top: 0;
     left: 0;
     height: 100dvh;
@@ -1048,12 +1050,12 @@ footer span {
     overflow: hidden;
   }
 
-  .contact-link {
+  .menu-contact-link {
     position: absolute;
     bottom: 2rem;
+    left: 2rem;
     color: var(--light-color);
     text-transform: uppercase;
-    left: 2rem;
     font-size: 1.6rem;
     opacity: 0;
     transform: translateY(10px);

@@ -981,7 +981,7 @@ function initGlobalHeader() {
   const mobileMenuBtn = document.getElementById("mobile_menu_link");
   const mobileMenuTab = document.getElementById("mobile_menu");
   const mobileTargetItems = mobileMenuTab.querySelectorAll(
-    ".category-item, .contact-link",
+    ".category-item, .menu-contact-link",
   );
 
   if (mobileMenuBtn) {
