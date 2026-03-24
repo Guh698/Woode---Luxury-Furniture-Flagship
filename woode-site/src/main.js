@@ -24,6 +24,7 @@ let activeMenuTarget = null;
 let isMenuAnimating = false;
 let activedMenu = false;
 let menuAnimating = false;
+let activeCategory = null;
 
 const client = createClient({
   projectId: "1zhhp7qc",
@@ -983,6 +984,7 @@ function initGlobalHeader() {
   const mobileTargetItems = mobileMenuTab.querySelectorAll(
     ".category-item, .menu-contact-link",
   );
+  const mobileCategoryLinks = document.querySelectorAll(".category-item");
 
   if (mobileMenuBtn) {
     mobileMenuBtn.addEventListener("click", () => {
@@ -1047,6 +1049,108 @@ function initGlobalHeader() {
       }
     });
   }
+
+  // We create a dedicated function to handle the closing animation
+  function closeCategory(categoryLink) {
+    if (!categoryLink) return;
+
+    const button = categoryLink.querySelector(".category-toggle");
+    const submenu = categoryLink.querySelector(".submenu");
+    const subCategories = submenu.querySelectorAll(".sub-menu-sub-category");
+    const iconVerticalLine = button.querySelector("path:nth-child(2)");
+
+    // Update ARIA state for accessibility
+    button.setAttribute("aria-expanded", "false");
+    categoryLink.isOpen = false;
+
+    let tl = gsap.timeline();
+
+    // Animate the - back to a +
+    gsap.to(iconVerticalLine, {
+      rotation: 0,
+      opacity: 1,
+      transformOrigin: "50% 50%",
+      duration: 0.4,
+      ease: "power2.inOut",
+    });
+
+    // Fade out the inner content, then collapse the container
+    tl.to(subCategories, {
+      opacity: 0,
+      y: -10,
+      duration: 0.3,
+      stagger: -0.02,
+      ease: "power2.in",
+    }).to(
+      submenu,
+      {
+        height: 0,
+        duration: 0.7,
+        ease: "expo.inOut",
+      },
+      "-=0.2",
+    );
+  }
+
+  mobileCategoryLinks.forEach((categoryLink) => {
+    const button = categoryLink.querySelector(".category-toggle");
+    const submenu = categoryLink.querySelector(".submenu");
+    const subCategories = submenu.querySelectorAll(".sub-menu-sub-category");
+    const iconVerticalLine = button.querySelector("path:nth-child(2)");
+
+    // Attach the state directly to the element rather than using a scoped variable
+    categoryLink.isOpen = false;
+
+    gsap.set(subCategories, { opacity: 0, y: 15 });
+
+    button.addEventListener("click", () => {
+      // Prevent clicking while animating to avoid layout jumps
+      if (gsap.isTweening(submenu)) return;
+
+      if (!categoryLink.isOpen) {
+        // ACCORDION LOGIC: If another category is open, close it first
+        if (activeCategory && activeCategory !== categoryLink) {
+          closeCategory(activeCategory);
+        }
+
+        categoryLink.isOpen = true;
+        activeCategory = categoryLink; // Set this item as the newly active one
+        button.setAttribute("aria-expanded", "true");
+
+        let tl = gsap.timeline();
+
+        // Animate the + to a -
+        gsap.to(iconVerticalLine, {
+          rotation: 90,
+          opacity: 0,
+          transformOrigin: "50% 50%",
+          duration: 0.4,
+          ease: "power2.inOut",
+        });
+
+        // Expand the container, then stagger in the content
+        tl.to(submenu, {
+          height: "auto",
+          duration: 0.7,
+          ease: "expo.inOut",
+        }).to(
+          subCategories,
+          {
+            opacity: 1,
+            y: 0,
+            duration: 0.5,
+            stagger: 0.05,
+            ease: "power2.out",
+          },
+          "-=0.4",
+        );
+      } else {
+        // If the user clicks the category that is ALREADY open, just close it
+        closeCategory(categoryLink);
+        activeCategory = null;
+      }
+    });
+  });
 }
 
 function resetHeaderState() {

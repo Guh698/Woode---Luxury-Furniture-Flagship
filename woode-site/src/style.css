@@ -1048,6 +1048,24 @@ footer span {
   .submenu {
     height: 0;
     overflow: hidden;
+    font-size: 1.6rem;
+    padding-left: 2rem;
+    padding-right: 2rem;
+    color: var(--light-color);
+    font-family: var(--destac-font-family);
+  }
+
+  .sub-menu-sub-category {
+    display: flex;
+    padding: 2rem 0rem 2rem 0rem;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .submenu a {
+    font-size: 1.4rem;
+    color: var(--light-color);
+    font-family: var(--default-font-family);
   }
 
   .menu-contact-link {
