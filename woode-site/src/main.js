@@ -22,6 +22,8 @@ let productsCtx;
 let homeAbortController;
 let activeMenuTarget = null;
 let isMenuAnimating = false;
+let activedMenu = false;
+let menuAnimating = false;
 
 const client = createClient({
   projectId: "1zhhp7qc",
@@ -967,9 +969,6 @@ function initGlobalHeader() {
     ".category-item, .contact-link",
   );
 
-  let activedMenu = false;
-  let menuAnimating = false;
-
   if (mobileMenuBtn) {
     mobileMenuBtn.addEventListener("click", () => {
       if (menuAnimating) return;
@@ -1038,6 +1037,9 @@ function initGlobalHeader() {
 function resetHeaderState() {
   gsap.set(".header-background", { y: "-100%" });
   gsap.set(".hover-line", { x: "-100%" });
+  gsap.set(".mobile-menu", { x: "100%" });
+  gsap.set("#path3", { y: 0, rotation: 0, transformOrigin: "50% 50%" });
+  gsap.set("#path3-9", { y: 0, rotation: 0, transformOrigin: "50% 50%" });
 
   const menuOverlays = document.querySelectorAll(
     "#menu_living, #menu_dining, #menu_bedroom, #menu_collections, #search_tab",
@@ -1052,6 +1054,8 @@ function resetHeaderState() {
   // ADD THESE TWO LINES:
   activeMenuTarget = null;
   isMenuAnimating = false;
+  activedMenu = false;
+  menuAnimating = false;
 }
 
 initGlobalHeader();

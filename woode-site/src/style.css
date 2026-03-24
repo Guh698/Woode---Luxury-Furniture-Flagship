@@ -105,6 +105,10 @@ header ul.header-icons {
   display: none;
 }
 
+.mobile-menu {
+  display: none;
+}
+
 header ul li {
   position: relative;
   padding-bottom: 0.3rem;
@@ -596,6 +600,7 @@ button {
   padding: 2rem;
   height: 100vh;
   transform: translateY(-20%);
+  overflow: hidden;
 }
 
 .product-main-photo {
@@ -824,6 +829,7 @@ h1.products-category-title {
 }
 
 .contact-hero ul {
+  position: relative;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -1295,6 +1301,32 @@ footer span {
 
   .recommended-products-product {
     width: 100%;
+  }
+
+  .contact-hero {
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-areas:
+      "title          title  "
+      "home-btn       .      "
+      "links-list     .      "
+      ".              address";
+  }
+
+  .contact-hero h1 {
+    font-size: 5rem;
+  }
+
+  .contact-link {
+    position: absolute;
+    top: 0;
+    left: 0;
+    display: flex;
+    justify-self: space-between;
+    opacity: 1;
+  }
+
+  .contact-carousel-wrapper {
+    display: none;
   }
 
   footer {
