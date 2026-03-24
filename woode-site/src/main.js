@@ -573,52 +573,107 @@ function initProductsCategory(container) {
     backToHomeLink.addEventListener("mouseleave", () =>
       gsap.to(hoverLine, { x: "100%", duration: 0.4, overwrite: true }),
     );
+    ScrollTrigger.matchMedia({
+      "(min-width: 1024px)": function () {
+        if (cards.length === 0 || !cardContainer) return;
 
-    if (cards.length === 0 || !cardContainer) return;
+        let targetX = 0,
+          currentX = 0;
+        const ease = 0.08;
 
-    let targetX = 0,
-      currentX = 0;
-    const ease = 0.08;
-    let itemWidth, totalWidth, wrapWidth;
+        let itemWidth, totalWidth, wrapWidth;
 
-    function updateMetrics() {
-      const cardWidth = cards[0].offsetWidth;
-      const gap = parseFloat(getComputedStyle(cardContainer).gap) || 0;
-      itemWidth = cardWidth + gap;
-      totalWidth = itemWidth * cards.length;
-      wrapWidth = gsap.utils.wrap(-itemWidth, totalWidth - itemWidth);
-    }
-    updateMetrics();
+        function updateMetrics() {
+          const cardWidth = cards[0].offsetWidth;
+          const gap = parseFloat(getComputedStyle(cardContainer).gap) || 0;
+          itemWidth = cardWidth + gap;
+          totalWidth = itemWidth * cards.length;
+          wrapWidth = gsap.utils.wrap(-itemWidth, totalWidth - itemWidth);
+        }
 
-    window.addEventListener("resize", updateMetrics);
+        updateMetrics();
+        window.addEventListener("resize", updateMetrics);
+        Observer.create({
+          target: window,
+          type: "wheel,touch,pointer",
+          preventDefault: true,
+          onChange: (self) => {
+            const velocity = self.deltaY + self.deltaX;
+            targetX += velocity * 0.8;
+          },
+        });
+        const tickerFunc = () => {
+          currentX += (targetX - currentX) * ease;
+          cards.forEach((card, i) => {
+            const initialPos = i * itemWidth;
+            const offset = wrapWidth(initialPos - currentX) - initialPos;
+            const actualX =
+              offset > totalWidth - itemWidth ? offset - totalWidth : offset;
+            gsap.set(card, { x: actualX, force3D: true });
+          });
+        };
+        gsap.ticker.add(tickerFunc);
+        return () => {
+          window.removeEventListener("resize", updateMetrics);
+          gsap.ticker.remove(tickerFunc);
+        };
+      },
 
-    //ver possibilidade de colocar nas setinhas
-    Observer.create({
-      target: window,
-      type: "wheel,touch,pointer",
-      preventDefault: true,
-      onChange: (self) => {
-        const velocity = self.deltaY + self.deltaX;
-        targetX += velocity * 0.8;
+      "(max-width: 1023px)": function () {
+        if (cards.length === 0 || !cardContainer) return;
+
+        let targetY = 0,
+          currentY = 0;
+        const ease = 0.08;
+
+        // CHANGED: Declared the correct height variables instead of width
+        let itemHeight, totalHeight, wrapHeight;
+
+        function updateMetrics() {
+          const cardHeight = cards[0].offsetHeight;
+          const gap = parseFloat(getComputedStyle(cardContainer).gap) || 0;
+
+          itemHeight = cardHeight + gap;
+          totalHeight = itemHeight * cards.length;
+          // GSAP wrap utility for seamless vertical looping
+          wrapHeight = gsap.utils.wrap(-itemHeight, totalHeight - itemHeight);
+        }
+
+        updateMetrics();
+        window.addEventListener("resize", updateMetrics);
+
+        Observer.create({
+          target: window,
+          type: "wheel,touch,pointer",
+          preventDefault: true, // Prevents native scroll
+          onChange: (self) => {
+            // Usually, for pure vertical mobile scrolling, you only need deltaY
+            const velocity = self.deltaY;
+            targetY += velocity * 0.8;
+          },
+        });
+
+        const tickerFunc = () => {
+          currentY += (targetY - currentY) * ease;
+          cards.forEach((card, i) => {
+            const initialPos = i * itemHeight;
+            const offset = wrapHeight(initialPos - currentY) - initialPos;
+            const actualY =
+              offset > totalHeight - itemHeight ? offset - totalHeight : offset;
+
+            // GSAP set for vertical Y axis
+            gsap.set(card, { y: actualY, force3D: true });
+          });
+        };
+
+        gsap.ticker.add(tickerFunc);
+
+        return () => {
+          window.removeEventListener("resize", updateMetrics);
+          gsap.ticker.remove(tickerFunc);
+        };
       },
     });
-
-    const tickerFunc = () => {
-      currentX += (targetX - currentX) * ease;
-      cards.forEach((card, i) => {
-        const initialPos = i * itemWidth;
-        const offset = wrapWidth(initialPos - currentX) - initialPos;
-        const actualX =
-          offset > totalWidth - itemWidth ? offset - totalWidth : offset;
-        gsap.set(card, { x: actualX, force3D: true });
-      });
-    };
-    gsap.ticker.add(tickerFunc);
-
-    return () => {
-      window.removeEventListener("resize", updateMetrics);
-      gsap.ticker.remove(tickerFunc);
-    };
   }, container);
 }
 
