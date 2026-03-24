@@ -157,7 +157,6 @@ header a {
   position: fixed;
   width: 100%;
   height: 100dvh;
-  height: 100vh;
   background-color: #0000009d;
   z-index: 50;
   pointer-events: none;
@@ -237,8 +236,6 @@ header a {
   right: 0;
   width: 50%;
   height: 100dvh;
-  height: 100vh;
-
   background-color: var(--dark-color);
   transform: translateX(100%);
   z-index: 300;
@@ -249,8 +246,6 @@ header a {
   position: fixed;
   width: 100%;
   height: 100dvh;
-  height: 100vh;
-
   background-color: #0000009d;
   z-index: 200;
   pointer-events: none;
@@ -321,7 +316,6 @@ header a {
   align-items: center;
   padding: 0 2rem;
   height: 100dvh;
-  height: 100vh;
   overflow: hidden;
 }
 
@@ -623,8 +617,6 @@ button {
   top: 0;
   left: 0;
   height: 100dvh;
-  height: 100vh;
-
   width: 100%;
   display: grid;
   grid-template-columns: repeat(5, 1fr);
@@ -647,8 +639,6 @@ button {
 
 .product-details {
   height: 100dvh;
-  height: 100vh;
-
   display: grid;
   grid-template-columns: repeat(5, 1fr);
   grid-template-rows: repeat(4, 1fr);
@@ -802,8 +792,6 @@ h1.products-category-title {
 
 .contact-hero {
   height: 100dvh;
-  height: 100vh;
-
   display: grid;
   height: 100vh;
   grid-template-columns: repeat(5, 1fr);
@@ -1028,12 +1016,10 @@ footer span {
     top: 0;
     left: 0;
     height: 100dvh;
-    height: 100vh;
     width: 100%;
     background-color: var(--dark-color);
     z-index: 100;
     transform: translateX(100%);
-    overflow: auto;
   }
 
   .menu-categories {
@@ -1286,8 +1272,6 @@ footer span {
 
   .product-details {
     height: 150dvh;
-    height: 150vh;
-
     grid-template-columns: repeat(2, 1fr);
     grid-template-rows: 1fr 1fr 1fr 60px;
     grid-template-areas:
