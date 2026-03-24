@@ -479,6 +479,21 @@ function initProductPageAnimations(container) {
   productPageCtx = gsap.context(() => {
     const globalHeader = document.querySelector("header");
     const globalHeaderBg = document.querySelector(".header-background");
+    const productView = document.querySelector(".product-view");
+
+    const img = productView.querySelector("img");
+
+    gsap.to(img, {
+      y: "10%",
+      ease: "none",
+      scrollTrigger: {
+        trigger: productView,
+        start: "top bottom",
+        end: "bottom top",
+        scrub: true,
+      },
+    });
+
     ScrollTrigger.matchMedia({
       "(min-width: 1024px)": function () {
         let productPhotosTl = gsap.timeline({
