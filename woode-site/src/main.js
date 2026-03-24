@@ -580,19 +580,20 @@ function initProductsCategory(container) {
         let targetX = 0,
           currentX = 0;
         const ease = 0.08;
-
-        let itemWidth, totalWidth, wrapWidth;
+        let itemWidth, totalWidth, wrapWidth, cardWidth, containerBounds;
 
         function updateMetrics() {
-          const cardWidth = cards[0].offsetWidth;
+          cardWidth = cards[0].offsetWidth;
           const gap = parseFloat(getComputedStyle(cardContainer).gap) || 0;
           itemWidth = cardWidth + gap;
           totalWidth = itemWidth * cards.length;
           wrapWidth = gsap.utils.wrap(-itemWidth, totalWidth - itemWidth);
+          containerBounds = cardContainer.getBoundingClientRect();
         }
 
         updateMetrics();
         window.addEventListener("resize", updateMetrics);
+
         Observer.create({
           target: window,
           type: "wheel,touch,pointer",
@@ -602,16 +603,41 @@ function initProductsCategory(container) {
             targetX += velocity * 0.8;
           },
         });
+
         const tickerFunc = () => {
           currentX += (targetX - currentX) * ease;
+          const viewportCenter = window.innerWidth / 2;
+
           cards.forEach((card, i) => {
             const initialPos = i * itemWidth;
             const offset = wrapWidth(initialPos - currentX) - initialPos;
             const actualX =
               offset > totalWidth - itemWidth ? offset - totalWidth : offset;
+
             gsap.set(card, { x: actualX, force3D: true });
+
+            const img = card.querySelector("img");
+            if (img) {
+              const trueCardCenter =
+                containerBounds.left + initialPos + actualX + cardWidth / 2;
+
+              const distanceToCenter = trueCardCenter - viewportCenter;
+              const maxVisibleDistance = viewportCenter + cardWidth / 2;
+
+              let ratio = distanceToCenter / maxVisibleDistance;
+              ratio = gsap.utils.clamp(-1, 1, ratio);
+
+              const maxTravel = cardWidth * 0.1;
+
+              gsap.set(img, {
+                x: ratio * -maxTravel,
+                scale: 1.2,
+                force3D: true,
+              });
+            }
           });
         };
+
         gsap.ticker.add(tickerFunc);
         return () => {
           window.removeEventListener("resize", updateMetrics);
@@ -625,16 +651,15 @@ function initProductsCategory(container) {
         let targetY = 0,
           currentY = 0;
         const ease = 0.08;
-
-        let itemHeight, totalHeight, wrapHeight;
+        let itemHeight, totalHeight, wrapHeight, cardHeight, containerBounds;
 
         function updateMetrics() {
-          const cardHeight = cards[0].offsetHeight;
+          cardHeight = cards[0].offsetHeight;
           const gap = parseFloat(getComputedStyle(cardContainer).gap) || 0;
-
           itemHeight = cardHeight + gap;
           totalHeight = itemHeight * cards.length;
           wrapHeight = gsap.utils.wrap(-itemHeight, totalHeight - itemHeight);
+          containerBounds = cardContainer.getBoundingClientRect();
         }
 
         updateMetrics();
@@ -652,6 +677,8 @@ function initProductsCategory(container) {
 
         const tickerFunc = () => {
           currentY += (targetY - currentY) * ease;
+          const viewportCenter = window.innerHeight / 2;
+
           cards.forEach((card, i) => {
             const initialPos = i * itemHeight;
             const offset = wrapHeight(initialPos - currentY) - initialPos;
@@ -659,6 +686,27 @@ function initProductsCategory(container) {
               offset > totalHeight - itemHeight ? offset - totalHeight : offset;
 
             gsap.set(card, { y: actualY, force3D: true });
+
+            const img = card.querySelector("img");
+            if (img) {
+              // THE FIX: Add initialPos for vertical mobile scrolling as well!
+              const trueCardCenter =
+                containerBounds.top + initialPos + actualY + cardHeight / 2;
+
+              const distanceToCenter = trueCardCenter - viewportCenter;
+              const maxVisibleDistance = viewportCenter + cardHeight / 2;
+
+              let ratio = distanceToCenter / maxVisibleDistance;
+              ratio = gsap.utils.clamp(-1, 1, ratio);
+
+              const maxTravel = cardHeight * 0.1;
+
+              gsap.set(img, {
+                y: ratio * -maxTravel,
+                scale: 1.2,
+                force3D: true,
+              });
+            }
           });
         };
 
@@ -1367,7 +1415,7 @@ barba.init({
             if (cards[index]) {
               cards[index].innerHTML = `
                 <a href="product-page.html?slug=${product.slug}" style="display:block; width:100%; height:100%; text-decoration:none;">
-                  <img src="${urlFor(product.mainImage).url()}" alt="${product.name}" style="width:100%; height:100%; object-fit:cover;">
+                  <img src="${urlFor(product.mainImage).url()}" alt="${product.name}" style="width:100%; height:100%; object-fit:cover; transform: scale(1.2);">
                 </a>
               `;
             }
@@ -1375,7 +1423,19 @@ barba.init({
         }
       },
       afterEnter(data) {
-        initProductsCategory(data.next.container);
+        const images = data.next.container.querySelectorAll("img");
+
+        const imagePromises = Array.from(images).map((img) => {
+          if (img.complete) return Promise.resolve();
+          return new Promise((resolve) => {
+            img.onload = resolve;
+            img.onerror = resolve;
+          });
+        });
+
+        Promise.all(imagePromises).then(() => {
+          initProductsCategory(data.next.container);
+        });
       },
       afterLeave() {
         killProductsCategory();

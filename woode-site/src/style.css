@@ -788,6 +788,7 @@ h1.products-category-title {
   height: 100%;
   flex-shrink: 0;
   background-color: var(--dark-color);
+  overflow: hidden;
 }
 
 .contact-hero {
