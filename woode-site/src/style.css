@@ -668,6 +668,7 @@ button {
   height: 100%;
   background-color: var(--dark-color);
   flex-shrink: 0;
+  overflow: hidden;
 }
 
 .product-details-description {

@@ -480,11 +480,10 @@ function initProductPageAnimations(container) {
   productPageCtx = gsap.context(() => {
     const globalHeader = document.querySelector("header");
     const globalHeaderBg = document.querySelector(".header-background");
-    const productView = document.querySelector(".product-view");
+    const productView = container.querySelector(".product-view");
 
-    const img = productView.querySelector("img");
-
-    gsap.to(img, {
+    const mainImg = productView.querySelector("img");
+    gsap.to(mainImg, {
       y: "10%",
       ease: "none",
       scrollTrigger: {
@@ -494,6 +493,10 @@ function initProductPageAnimations(container) {
         scrub: true,
       },
     });
+
+    const galleryImages = container.querySelectorAll(
+      ".product-details-photos-container .photo img",
+    );
 
     ScrollTrigger.matchMedia({
       "(min-width: 1024px)": function () {
@@ -523,30 +526,66 @@ function initProductPageAnimations(container) {
           },
         });
 
-        productPhotosTl.to(".product-details-photos-container", {
-          y: window.innerHeight * -1 - 20,
-          ease: "none",
-        });
+        if (galleryImages.length > 0) {
+          gsap.set(galleryImages, {
+            scale: 1.15,
+            transformOrigin: "center center",
+          });
 
-        productPhotosTl.to(".product-details-photos-container", {
-          y: window.innerHeight * -2 - 40,
-          ease: "none",
-        });
+          gsap.set(galleryImages[0], { yPercent: 0 });
 
-        productPhotosTl.to(".product-details-photos-container", {
-          y: window.innerHeight * -3 - 60,
-          ease: "none",
-        });
+          for (let i = 1; i < galleryImages.length; i++) {
+            gsap.set(galleryImages[i], { yPercent: -10 });
+          }
 
-        productPhotosTl.to(".product-details-photos-container", {
-          y: window.innerHeight * -4 - 80,
-          ease: "none",
-        });
+          for (let i = 0; i < galleryImages.length - 1; i++) {
+            productPhotosTl.to(".product-details-photos-container", {
+              y: window.innerHeight * -(i + 1) - 20 * (i + 1),
+              ease: "none",
+            });
+
+            productPhotosTl.to(
+              galleryImages[i],
+              { yPercent: 10, ease: "none" },
+              "<",
+            );
+
+            productPhotosTl.to(
+              galleryImages[i + 1],
+              { yPercent: 0, ease: "none" },
+              "<",
+            );
+          }
+        }
       },
 
-      "(max-width: 1023px)": function () {},
+      "(max-width: 1023px)": function () {
+        if (galleryImages.length > 0) {
+          gsap.set(galleryImages, {
+            scale: 1.15,
+            transformOrigin: "center center",
+          });
+
+          galleryImages.forEach((img) => {
+            gsap.fromTo(
+              img,
+              { yPercent: -10 },
+              {
+                yPercent: 10,
+                ease: "none",
+                scrollTrigger: {
+                  trigger: img.parentElement,
+                  start: "top bottom",
+                  end: "bottom top",
+                  scrub: true,
+                },
+              },
+            );
+          });
+        }
+      },
     });
-  });
+  }, container);
 }
 
 function killProductPage() {
@@ -1337,6 +1376,27 @@ barba.init({
             productData.shortDescription;
           nextDom.querySelector(".product-details-description").textContent =
             productData.detailedDescription;
+
+          if (productData.gallery && productData.gallery.length > 0) {
+            const photoDivs = nextDom.querySelectorAll(
+              ".product-details-photos-container .photo",
+            );
+
+            photoDivs.forEach((div, index) => {
+              if (productData.gallery[index]) {
+                const imgEl = document.createElement("img");
+
+                imgEl.src = urlFor(productData.gallery[index]).url();
+                imgEl.alt = `${productData.name} - Gallery Image ${index + 1}`;
+
+                imgEl.style.width = "100%";
+                imgEl.style.height = "100%";
+                imgEl.style.objectFit = "cover";
+
+                div.appendChild(imgEl);
+              }
+            });
+          }
         }
       },
       afterEnter(data) {
