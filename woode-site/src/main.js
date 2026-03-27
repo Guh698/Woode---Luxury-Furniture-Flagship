@@ -981,7 +981,7 @@ function initGlobalHeader() {
       }
 
       const targetItems = targetOverlay.querySelectorAll(
-        ".product-categories h3, .product-categories li, .search-item",
+        ".product-categories h3, .product-categories li, .search-item, .product-categories-images",
       );
 
       if (activeMenuTarget === target) {
@@ -1017,7 +1017,7 @@ function initGlobalHeader() {
         if (activeMenuTarget) {
           const oldOverlay = document.querySelector(activeMenuTarget);
           const oldItems = oldOverlay.querySelectorAll(
-            ".product-categories h3, .product-categories li, .search-item",
+            ".product-categories h3, .product-categories li, .search-item, .product-categories-images",
           );
 
           const tl = gsap.timeline({
