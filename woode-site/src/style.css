@@ -415,7 +415,7 @@ header a {
   color: var(--dark-color);
   text-transform: uppercase;
   font-family: var(--destac-font-family);
-  font-size: 12rem;
+  font-size: var(--fs-xxl);
 }
 
 .the-edit p {
@@ -993,6 +993,102 @@ footer span {
   z-index: 10000;
 }
 
+@media (min-width: 1920px) {
+  :root {
+    --fs-xs: 2.6rem;
+    --fs-sm: 2.6rem;
+    --fs-base: 2.7rem;
+    --fs-md: clamp(4.7rem, 1vw + 2rem, 5.7rem);
+    --fs-lg: 6rem;
+    --fs-search: clamp(7rem, 10vw, 9rem);
+    --fs-xl: clamp(7rem, 10vw, 13rem);
+    --fs-xxl: clamp(7rem, 11vw, 19rem);
+    --fs-giant: clamp(9rem, 20vw, 23rem);
+  }
+
+  .header-background {
+    padding: 4rem;
+    height: 10rem;
+  }
+
+  header {
+    padding: 4rem;
+    height: 10rem;
+  }
+
+  header ul {
+    gap: 7rem;
+  }
+
+  header ul.header-icons {
+    gap: 4rem;
+    height: auto;
+  }
+
+  header svg {
+    width: 2.6rem;
+  }
+
+  .hero {
+    padding: 4rem;
+  }
+
+  .the-edit-first-container,
+  .the-edit-second-container,
+  .the-edit-third-container {
+    padding: 4rem;
+  }
+
+  .the-edit h2 {
+    top: 4rem;
+    left: 4rem;
+  }
+
+  .product-details {
+    padding: 4rem;
+    gap: 4rem;
+  }
+
+  .product-page-hero {
+    gap: 4rem;
+    padding: 4rem;
+    margin-top: 10rem;
+  }
+
+  .product-page-hero h1 {
+    font-size: var(--fs-xxl);
+  }
+
+  .continue-curating {
+    gap: 4rem;
+    padding: 4rem;
+  }
+
+  .continue-curating h2 {
+    font-size: var(--fs-md);
+  }
+
+  .products-category-hero {
+    gap: 4rem;
+    padding: 4rem;
+  }
+
+  h1.products-category-title {
+    font-size: var(--fs-xxl);
+    line-height: auto;
+  }
+
+  .contact-hero {
+    gap: 4rem;
+    padding: 4rem;
+  }
+
+  .contact-hero h1 {
+    line-height: auto;
+    font-size: var(--fs-xxl);
+  }
+}
+
 @media (max-width: 1024px) {
   .header-link {
     display: none;
@@ -1105,6 +1201,7 @@ footer span {
   .hero {
     flex-direction: column;
     justify-content: center;
+    margin: 0;
   }
 
   .hero-slogan {
