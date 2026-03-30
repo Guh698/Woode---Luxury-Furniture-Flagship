@@ -60,6 +60,17 @@ body.is-product {
   border: 0;
 }
 
+button {
+  background-color: var(--dark-color);
+  text-transform: uppercase;
+  font-family: var(--default-font-family);
+  font-weight: var(--light-weight-font);
+  color: var(--light-color);
+  font-size: var(--fs-base);
+  cursor: pointer;
+  border: none;
+}
+
 .header-background {
   position: fixed;
   align-items: center;
@@ -550,16 +561,6 @@ header a {
   grid-area: text;
 }
 
-button {
-  background-color: var(--dark-color);
-  text-transform: uppercase;
-  font-family: var(--default-font-family);
-  font-weight: var(--light-weight-font);
-  color: var(--light-color);
-  font-size: var(--fs-base);
-  border: none;
-}
-
 .the-edit-third-container button {
   grid-area: button;
   height: 35%;
@@ -577,7 +578,9 @@ button {
     ".           .           .           .              .";
   gap: 2rem;
   padding: 2rem;
-  height: 100vh;
+  min-height: 100vh;
+  max-height: 105vh;
+  height: auto;
   width: 100%;
   font-family: var(--default-font-family);
   font-size: var(--fs-xs);
@@ -966,6 +969,10 @@ footer ul {
   text-transform: uppercase;
   font-size: var(--fs-xs);
   gap: 3rem;
+}
+
+footer ul li {
+  cursor: pointer;
 }
 
 .footer-list1 {
@@ -1390,7 +1397,7 @@ footer span {
   }
 
   .product-details {
-    height: 150dvh;
+    height: 100dvh;
     grid-template-columns: repeat(2, 1fr);
     grid-template-rows: 1fr 1fr 1fr 60px;
     grid-template-areas:
@@ -1401,10 +1408,17 @@ footer span {
   }
 
   .product-details-photos-container {
-    flex-direction: row;
-    justify-content: center;
-    align-items: center;
+    position: relative;
+    display: block;
     overflow: hidden;
+  }
+
+  .product-details-photos-container .photo {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
   }
 
   .product-details-description {

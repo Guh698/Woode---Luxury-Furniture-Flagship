@@ -90,24 +90,23 @@ const homeQuery = `*[_type == "home"][0]{
 
 function initSmoother(contentEl) {
   if (ScrollSmoother.get()) ScrollSmoother.get().kill();
-  ScrollTrigger.matchMedia({
-    "(min-width: 1024px)": function () {
-      smoother = ScrollSmoother.create({
-        wrapper: ".smooth-wrapper",
-        content: contentEl,
-        smooth: 1,
-        effects: false,
-      });
-    },
+  let mm = gsap.matchMedia();
 
-    "(max-width: 1023px)": function () {
-      smoother = ScrollSmoother.create({
-        wrapper: ".smooth-wrapper",
-        content: contentEl,
-        smooth: 1,
-        effects: true,
-      });
-    },
+  mm.add("(min-width: 1024px)", () => {
+    smoother = ScrollSmoother.create({
+      wrapper: ".smooth-wrapper",
+      content: contentEl,
+      smooth: 1,
+      effects: false,
+    });
+  });
+  mm.add("(max-width: 1023px)", () => {
+    smoother = ScrollSmoother.create({
+      wrapper: ".smooth-wrapper",
+      content: contentEl,
+      smooth: 1,
+      effects: true,
+    });
   });
 }
 
@@ -273,199 +272,199 @@ function initHomeAnimations(container) {
     const theEdit = container.querySelector(".the-edit");
     const animWrapper = container.querySelector(".animation-wrapper");
     if (theEdit && animWrapper) {
-      ScrollTrigger.matchMedia({
-        "(min-width: 1024px)": function () {
-          const extraHeight = theEdit.offsetHeight - window.innerHeight;
-          if (extraHeight > 0) {
-            gsap.set(animWrapper, { marginBottom: extraHeight });
-          }
+      let mm = gsap.matchMedia();
 
-          if (timerContainer && images.length > 0) {
-            timerContainer.innerHTML = "";
-            images.forEach(() => {
-              const bar = document.createElement("div");
-              bar.classList.add("timer-bar");
-              timerContainer.appendChild(bar);
+      mm.add("(min-width: 1024px)", () => {
+        const extraHeight = theEdit.offsetHeight - window.innerHeight;
+        if (extraHeight > 0) {
+          gsap.set(animWrapper, { marginBottom: extraHeight });
+        }
+
+        if (timerContainer && images.length > 0) {
+          timerContainer.innerHTML = "";
+          images.forEach(() => {
+            const bar = document.createElement("div");
+            bar.classList.add("timer-bar");
+            timerContainer.appendChild(bar);
+          });
+
+          const timers = container.querySelectorAll(".timer-bar");
+          if (images.length === 1) {
+            gsap.set(images[0], { opacity: 1 });
+            gsap.set(timers[0], {
+              clipPath: "polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%)",
             });
+          } else {
+            gsap.set(images, { zIndex: 0, opacity: 0 });
+            gsap.set(images[0], { zIndex: 1, opacity: 1 });
+            const tl = gsap.timeline({ repeat: -1 });
 
-            const timers = container.querySelectorAll(".timer-bar");
-            if (images.length === 1) {
-              gsap.set(images[0], { opacity: 1 });
-              gsap.set(timers[0], {
+            images.forEach((img, index) => {
+              const nextImg = images[index + 1] || images[0];
+              const currentTimer = timers[index];
+              const isLast = index === images.length - 1;
+
+              tl.to(currentTimer, {
                 clipPath: "polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%)",
-              });
-            } else {
-              gsap.set(images, { zIndex: 0, opacity: 0 });
-              gsap.set(images[0], { zIndex: 1, opacity: 1 });
-              const tl = gsap.timeline({ repeat: -1 });
-
-              images.forEach((img, index) => {
-                const nextImg = images[index + 1] || images[0];
-                const currentTimer = timers[index];
-                const isLast = index === images.length - 1;
-
-                tl.to(currentTimer, {
-                  clipPath: "polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%)",
-                  duration: 3.7,
-                  ease: "none",
+                duration: 3.7,
+                ease: "none",
+              })
+                .set(nextImg, { zIndex: 2 })
+                .to(nextImg, {
+                  duration: 1.7,
+                  opacity: 1,
+                  ease: "power2.inOut",
                 })
-                  .set(nextImg, { zIndex: 2 })
-                  .to(nextImg, {
-                    duration: 1.7,
-                    opacity: 1,
-                    ease: "power2.inOut",
-                  })
-                  .set(img, { zIndex: 0, opacity: 0 })
-                  .set(nextImg, { zIndex: 1 });
+                .set(img, { zIndex: 0, opacity: 0 })
+                .set(nextImg, { zIndex: 1 });
 
-                if (isLast) {
-                  tl.set(timers, {
-                    clipPath: "polygon(0% 0%, 100% 0%, 100% 0%, 0% 0%)",
-                  });
-                }
-              });
-            }
+              if (isLast) {
+                tl.set(timers, {
+                  clipPath: "polygon(0% 0%, 100% 0%, 100% 0%, 0% 0%)",
+                });
+              }
+            });
           }
+        }
 
-          let theEditTl = gsap.timeline({
+        let theEditTl = gsap.timeline({
+          scrollTrigger: {
+            trigger: ".animation-wrapper",
+            start: "top top",
+            pin: true,
+            scrub: true,
+            ease: "none",
+            invalidateOnRefresh: true,
+          },
+        });
+
+        theEditTl
+          .to(".the-edit", { y: 0, ease: "none" })
+          .to(".hero-background", { scale: 1.1, ease: "none" }, "<")
+          .to(".hero", { filter: "blur(3px)", ease: "none" }, "<");
+
+        const imgContainers = container.querySelectorAll(".img-container");
+
+        imgContainers.forEach((imgContainer) => {
+          const img = imgContainer.querySelector("img");
+          const hoveredImg = imgContainer.querySelector(".hovered-img");
+
+          gsap.to(img, {
+            y: "10%",
+            ease: "none",
             scrollTrigger: {
-              trigger: ".animation-wrapper",
-              start: "top top",
-              pin: true,
+              trigger: imgContainer,
+              start: "top bottom",
+              end: "bottom top",
               scrub: true,
-              ease: "none",
-              invalidateOnRefresh: true,
             },
           });
 
-          theEditTl
-            .to(".the-edit", { y: 0, ease: "none" })
-            .to(".hero-background", { scale: 1.1, ease: "none" }, "<")
-            .to(".hero", { filter: "blur(3px)", ease: "none" }, "<");
-
-          const imgContainers = container.querySelectorAll(".img-container");
-
-          imgContainers.forEach((imgContainer) => {
-            const img = imgContainer.querySelector("img");
-            const hoveredImg = imgContainer.querySelector(".hovered-img");
-
-            gsap.to(img, {
-              y: "10%",
-              ease: "none",
-              scrollTrigger: {
-                trigger: imgContainer,
-                start: "top bottom",
-                end: "bottom top",
-                scrub: true,
-              },
-            });
-
-            gsap.to(hoveredImg, {
-              y: "10%",
-              ease: "none",
-              scrollTrigger: {
-                trigger: imgContainer,
-                start: "top bottom",
-                end: "bottom top",
-                scrub: true,
-              },
-            });
-
-            img.addEventListener("mouseenter", () => {
-              gsap.set(img, { opacity: 0 });
-            });
-
-            img.addEventListener("mouseleave", () => {
-              gsap.set(img, { opacity: 1 });
-            });
+          gsap.to(hoveredImg, {
+            y: "10%",
+            ease: "none",
+            scrollTrigger: {
+              trigger: imgContainer,
+              start: "top bottom",
+              end: "bottom top",
+              scrub: true,
+            },
           });
-        },
 
-        "(max-width: 1023px)": function () {
-          if (timerContainer && images.length > 0) {
-            timerContainer.innerHTML = "";
-            images.forEach(() => {
-              const bar = document.createElement("div");
-              bar.classList.add("timer-bar");
-              timerContainer.appendChild(bar);
+          img.addEventListener("mouseenter", () => {
+            gsap.set(img, { opacity: 0 });
+          });
+
+          img.addEventListener("mouseleave", () => {
+            gsap.set(img, { opacity: 1 });
+          });
+        });
+      });
+
+      mm.add("(max-width: 1023px)", () => {
+        if (timerContainer && images.length > 0) {
+          timerContainer.innerHTML = "";
+          images.forEach(() => {
+            const bar = document.createElement("div");
+            bar.classList.add("timer-bar");
+            timerContainer.appendChild(bar);
+          });
+
+          const timers = container.querySelectorAll(".timer-bar");
+          if (images.length === 1) {
+            gsap.set(images[0], { opacity: 1 });
+            gsap.set(timers[0], {
+              clipPath: "polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%)",
             });
+          } else {
+            gsap.set(images, { zIndex: 0, opacity: 0 });
+            gsap.set(images[0], { zIndex: 1, opacity: 1 });
+            const tl = gsap.timeline({ repeat: -1 });
 
-            const timers = container.querySelectorAll(".timer-bar");
-            if (images.length === 1) {
-              gsap.set(images[0], { opacity: 1 });
-              gsap.set(timers[0], {
+            images.forEach((img, index) => {
+              const nextImg = images[index + 1] || images[0];
+              const currentTimer = timers[index];
+              const isLast = index === images.length - 1;
+
+              tl.to(currentTimer, {
                 clipPath: "polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%)",
-              });
-            } else {
-              gsap.set(images, { zIndex: 0, opacity: 0 });
-              gsap.set(images[0], { zIndex: 1, opacity: 1 });
-              const tl = gsap.timeline({ repeat: -1 });
-
-              images.forEach((img, index) => {
-                const nextImg = images[index + 1] || images[0];
-                const currentTimer = timers[index];
-                const isLast = index === images.length - 1;
-
-                tl.to(currentTimer, {
-                  clipPath: "polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%)",
-                  duration: 3.7,
-                  ease: "none",
+                duration: 3.7,
+                ease: "none",
+              })
+                .set(nextImg, { zIndex: 2 })
+                .to(nextImg, {
+                  duration: 1.7,
+                  opacity: 1,
+                  ease: "power2.inOut",
                 })
-                  .set(nextImg, { zIndex: 2 })
-                  .to(nextImg, {
-                    duration: 1.7,
-                    opacity: 1,
-                    ease: "power2.inOut",
-                  })
-                  .set(img, { zIndex: 0, opacity: 0 })
-                  .set(nextImg, { zIndex: 1 });
+                .set(img, { zIndex: 0, opacity: 0 })
+                .set(nextImg, { zIndex: 1 });
 
-                if (isLast) {
-                  tl.set(timers, {
-                    clipPath: "polygon(0% 0%, 0% 0%, 0% 100%, 0% 100%)",
-                  });
-                }
-              });
-            }
+              if (isLast) {
+                tl.set(timers, {
+                  clipPath: "polygon(0% 0%, 0% 0%, 0% 100%, 0% 100%)",
+                });
+              }
+            });
           }
+        }
 
-          const imgContainers = container.querySelectorAll(".img-container");
+        const imgContainers = container.querySelectorAll(".img-container");
 
-          imgContainers.forEach((imgContainer) => {
-            const img = imgContainer.querySelector("img");
-            const hoveredImg = imgContainer.querySelector(".hovered-img");
+        imgContainers.forEach((imgContainer) => {
+          const img = imgContainer.querySelector("img");
+          const hoveredImg = imgContainer.querySelector(".hovered-img");
 
-            gsap.to(img, {
-              y: "10%",
-              ease: "none",
-              scrollTrigger: {
-                trigger: imgContainer,
-                start: "top bottom",
-                end: "bottom top",
-                scrub: true,
-              },
-            });
-
-            gsap.to(hoveredImg, {
-              y: "10%",
-              ease: "none",
-              scrollTrigger: {
-                trigger: imgContainer,
-                start: "top bottom",
-                end: "bottom top",
-                scrub: true,
-              },
-            });
-
-            img.addEventListener("mouseenter", () => {
-              gsap.to(img, { scale: 1.1 });
-            });
-
-            img.addEventListener("mouseleave", () => {
-              gsap.to(img, { scale: 1 });
-            });
+          gsap.to(img, {
+            y: "10%",
+            ease: "none",
+            scrollTrigger: {
+              trigger: imgContainer,
+              start: "top bottom",
+              end: "bottom top",
+              scrub: true,
+            },
           });
-        },
+
+          gsap.to(hoveredImg, {
+            y: "10%",
+            ease: "none",
+            scrollTrigger: {
+              trigger: imgContainer,
+              start: "top bottom",
+              end: "bottom top",
+              scrub: true,
+            },
+          });
+
+          img.addEventListener("mouseenter", () => {
+            gsap.to(img, { scale: 1.1 });
+          });
+
+          img.addEventListener("mouseleave", () => {
+            gsap.to(img, { scale: 1 });
+          });
+        });
       });
     }
   }, container);
@@ -494,96 +493,138 @@ function initProductPageAnimations(container) {
       },
     });
 
+    const galleryCards = container.querySelectorAll(
+      ".product-details-photos-container .photo",
+    );
     const galleryImages = container.querySelectorAll(
       ".product-details-photos-container .photo img",
     );
 
-    ScrollTrigger.matchMedia({
-      "(min-width: 1024px)": function () {
-        let productPhotosTl = gsap.timeline({
-          scrollTrigger: {
-            trigger: ".product-details",
-            start: "center center",
-            end: "+=2700",
-            pin: true,
-            scrub: true,
-            onEnter() {
-              gsap.to(globalHeader, { y: "-100%" });
-              gsap.to(globalHeaderBg, { y: "-100%" });
-            },
-            onEnterBack() {
-              gsap.to(globalHeader, { y: "-100%" });
-              gsap.to(globalHeaderBg, { y: "-100%" });
-            },
-            onLeave() {
-              gsap.to(globalHeader, { y: "0%" });
-              gsap.to(globalHeaderBg, { y: "0%" });
-            },
-            onLeaveBack() {
-              gsap.to(globalHeader, { y: "0%" });
-              gsap.to(globalHeaderBg, { y: "0%" });
-            },
-          },
-        });
+    let mm = gsap.matchMedia();
 
+    mm.add("(min-width: 1024px)", () => {
+      let productPhotosTl = gsap.timeline({
+        scrollTrigger: {
+          trigger: ".product-details",
+          start: "center center",
+          end: "+=2700",
+          pin: true,
+          scrub: true,
+          onEnter() {
+            gsap.to(globalHeader, { y: "-100%" });
+            gsap.to(globalHeaderBg, { y: "-100%" });
+          },
+          onEnterBack() {
+            gsap.to(globalHeader, { y: "-100%" });
+            gsap.to(globalHeaderBg, { y: "-100%" });
+          },
+          onLeave() {
+            gsap.to(globalHeader, { y: "0%" });
+            gsap.to(globalHeaderBg, { y: "0%" });
+          },
+          onLeaveBack() {
+            gsap.to(globalHeader, { y: "0%" });
+            gsap.to(globalHeaderBg, { y: "0%" });
+          },
+        },
+      });
+
+      if (galleryCards.length > 0) {
         if (galleryImages.length > 0) {
           gsap.set(galleryImages, {
             scale: 1.15,
             transformOrigin: "center center",
           });
-
           gsap.set(galleryImages[0], { yPercent: 0 });
-
           for (let i = 1; i < galleryImages.length; i++) {
             gsap.set(galleryImages[i], { yPercent: -10 });
           }
+        }
 
-          for (let i = 0; i < galleryImages.length - 1; i++) {
-            productPhotosTl.to(".product-details-photos-container", {
-              y: window.innerHeight * -(i + 1) - 20 * (i + 1),
-              ease: "none",
-            });
+        for (let i = 0; i < galleryCards.length - 1; i++) {
+          productPhotosTl.to(".product-details-photos-container", {
+            y: window.innerHeight * -(i + 1) - 20 * (i + 1),
+            ease: "none",
+          });
 
-            productPhotosTl.to(
-              galleryImages[i],
-              { yPercent: 10, ease: "none" },
-              "<",
-            );
+          const currentImg = galleryCards[i].querySelector("img");
+          const nextImg = galleryCards[i + 1].querySelector("img");
 
-            productPhotosTl.to(
-              galleryImages[i + 1],
-              { yPercent: 0, ease: "none" },
-              "<",
-            );
+          if (currentImg) {
+            productPhotosTl.to(currentImg, { yPercent: 10, ease: "none" }, "<");
+          }
+          if (nextImg) {
+            productPhotosTl.to(nextImg, { yPercent: 0, ease: "none" }, "<");
           }
         }
-      },
+      }
+    });
 
-      "(max-width: 1023px)": function () {
-        if (galleryImages.length > 0) {
-          gsap.set(galleryImages, {
-            scale: 1.15,
-            transformOrigin: "center center",
-          });
+    mm.add("(max-width: 1023px)", () => {
+      if (galleryCards.length > 0 && galleryImages.length > 0) {
+        gsap.set(galleryImages, {
+          scale: 1.15,
+          transformOrigin: "center center",
+        });
 
-          galleryImages.forEach((img) => {
-            gsap.fromTo(
-              img,
-              { yPercent: -10 },
-              {
-                yPercent: 10,
-                ease: "none",
-                scrollTrigger: {
-                  trigger: img.parentElement,
-                  start: "top bottom",
-                  end: "bottom top",
-                  scrub: true,
-                },
-              },
-            );
-          });
+        gsap.set(galleryCards, { zIndex: 0, autoAlpha: 0 });
+        gsap.set(galleryCards[0], { zIndex: 1, autoAlpha: 1 });
+
+        gsap.set(galleryImages[0], { xPercent: 0 });
+        for (let i = 1; i < galleryImages.length; i++) {
+          gsap.set(galleryImages[i], { xPercent: -15 });
         }
-      },
+
+        let tl = gsap.timeline({ repeat: -1 });
+
+        galleryCards.forEach((card, i) => {
+          const nextCard = galleryCards[i + 1] || galleryCards[0];
+
+          const currentImg = card.querySelector("img");
+          const nextImg = nextCard.querySelector("img");
+
+          tl.set(nextCard, { zIndex: 2, xPercent: 100, autoAlpha: 1 })
+            .set(nextImg, { xPercent: -15 })
+
+            .to(card, {
+              xPercent: -100,
+              duration: 1.2,
+              ease: "power2.inOut",
+              delay: 2,
+            })
+            .to(
+              nextCard,
+              {
+                xPercent: 0,
+                duration: 1.2,
+                ease: "power2.inOut",
+              },
+              "<",
+            )
+
+            .to(
+              currentImg,
+              {
+                xPercent: 15,
+                duration: 1.2,
+                ease: "power2.inOut",
+              },
+              "<",
+            )
+            .to(
+              nextImg,
+              {
+                xPercent: 0,
+                duration: 1.2,
+                ease: "power2.inOut",
+              },
+              "<",
+            )
+
+            .set(card, { zIndex: 0, autoAlpha: 0, xPercent: 0 })
+            .set(nextCard, { zIndex: 1 });
+        });
+      }
     });
   }, container);
 }
@@ -612,150 +653,150 @@ function initProductsCategory(container) {
     backToHomeLink.addEventListener("mouseleave", () =>
       gsap.to(hoverLine, { x: "100%", duration: 0.4, overwrite: true }),
     );
-    ScrollTrigger.matchMedia({
-      "(min-width: 1024px)": function () {
-        if (cards.length === 0 || !cardContainer) return;
 
-        let targetX = 0,
-          currentX = 0;
-        const ease = 0.08;
-        let itemWidth, totalWidth, wrapWidth, cardWidth, containerBounds;
+    let mm = gsap.matchMedia();
 
-        function updateMetrics() {
-          cardWidth = cards[0].offsetWidth;
-          const gap = parseFloat(getComputedStyle(cardContainer).gap) || 0;
-          itemWidth = cardWidth + gap;
-          totalWidth = itemWidth * cards.length;
-          wrapWidth = gsap.utils.wrap(-itemWidth, totalWidth - itemWidth);
-          containerBounds = cardContainer.getBoundingClientRect();
-        }
+    mm.add("(min-width: 1024px)", () => {
+      if (cards.length === 0 || !cardContainer) return;
 
-        updateMetrics();
-        window.addEventListener("resize", updateMetrics);
+      let targetX = 0,
+        currentX = 0;
+      const ease = 0.08;
+      let itemWidth, totalWidth, wrapWidth, cardWidth, containerBounds;
 
-        Observer.create({
-          target: window,
-          type: "wheel,touch,pointer",
-          preventDefault: true,
-          onChange: (self) => {
-            const velocity = self.deltaY + self.deltaX;
-            targetX += velocity * 0.8;
-          },
+      function updateMetrics() {
+        cardWidth = cards[0].offsetWidth;
+        const gap = parseFloat(getComputedStyle(cardContainer).gap) || 0;
+        itemWidth = cardWidth + gap;
+        totalWidth = itemWidth * cards.length;
+        wrapWidth = gsap.utils.wrap(-itemWidth, totalWidth - itemWidth);
+        containerBounds = cardContainer.getBoundingClientRect();
+      }
+
+      updateMetrics();
+      window.addEventListener("resize", updateMetrics);
+
+      Observer.create({
+        target: window,
+        type: "wheel,touch,pointer",
+        preventDefault: true,
+        onChange: (self) => {
+          const velocity = self.deltaY + self.deltaX;
+          targetX += velocity * 0.8;
+        },
+      });
+
+      const tickerFunc = () => {
+        currentX += (targetX - currentX) * ease;
+        const viewportCenter = window.innerWidth / 2;
+
+        cards.forEach((card, i) => {
+          const initialPos = i * itemWidth;
+          const offset = wrapWidth(initialPos - currentX) - initialPos;
+          const actualX =
+            offset > totalWidth - itemWidth ? offset - totalWidth : offset;
+
+          gsap.set(card, { x: actualX, force3D: true });
+
+          const img = card.querySelector("img");
+          if (img) {
+            const trueCardCenter =
+              containerBounds.left + initialPos + actualX + cardWidth / 2;
+
+            const distanceToCenter = trueCardCenter - viewportCenter;
+            const maxVisibleDistance = viewportCenter + cardWidth / 2;
+
+            let ratio = distanceToCenter / maxVisibleDistance;
+            ratio = gsap.utils.clamp(-1, 1, ratio);
+
+            const maxTravel = cardWidth * 0.1;
+
+            gsap.set(img, {
+              x: ratio * -maxTravel,
+              scale: 1.2,
+              force3D: true,
+            });
+          }
         });
+      };
 
-        const tickerFunc = () => {
-          currentX += (targetX - currentX) * ease;
-          const viewportCenter = window.innerWidth / 2;
+      gsap.ticker.add(tickerFunc);
+      return () => {
+        window.removeEventListener("resize", updateMetrics);
+        gsap.ticker.remove(tickerFunc);
+      };
+    });
+    mm.add("(max-width: 1023px)", () => {
+      if (cards.length === 0 || !cardContainer) return;
 
-          cards.forEach((card, i) => {
-            const initialPos = i * itemWidth;
-            const offset = wrapWidth(initialPos - currentX) - initialPos;
-            const actualX =
-              offset > totalWidth - itemWidth ? offset - totalWidth : offset;
+      let targetY = 0,
+        currentY = 0;
+      const ease = 0.08;
+      let itemHeight, totalHeight, wrapHeight, cardHeight, containerBounds;
 
-            gsap.set(card, { x: actualX, force3D: true });
+      function updateMetrics() {
+        cardHeight = cards[0].offsetHeight;
+        const gap = parseFloat(getComputedStyle(cardContainer).gap) || 0;
+        itemHeight = cardHeight + gap;
+        totalHeight = itemHeight * cards.length;
+        wrapHeight = gsap.utils.wrap(-itemHeight, totalHeight - itemHeight);
+        containerBounds = cardContainer.getBoundingClientRect();
+      }
 
-            const img = card.querySelector("img");
-            if (img) {
-              const trueCardCenter =
-                containerBounds.left + initialPos + actualX + cardWidth / 2;
+      updateMetrics();
+      window.addEventListener("resize", updateMetrics);
 
-              const distanceToCenter = trueCardCenter - viewportCenter;
-              const maxVisibleDistance = viewportCenter + cardWidth / 2;
+      Observer.create({
+        target: window,
+        type: "wheel,touch,pointer",
+        preventDefault: true,
+        onChange: (self) => {
+          const velocity = self.deltaY;
+          targetY -= velocity * 0.8;
+        },
+      });
 
-              let ratio = distanceToCenter / maxVisibleDistance;
-              ratio = gsap.utils.clamp(-1, 1, ratio);
+      const tickerFunc = () => {
+        currentY += (targetY - currentY) * ease;
+        const viewportCenter = window.innerHeight / 2;
 
-              const maxTravel = cardWidth * 0.1;
+        cards.forEach((card, i) => {
+          const initialPos = i * itemHeight;
+          const offset = wrapHeight(initialPos - currentY) - initialPos;
+          const actualY =
+            offset > totalHeight - itemHeight ? offset - totalHeight : offset;
 
-              gsap.set(img, {
-                x: ratio * -maxTravel,
-                scale: 1.2,
-                force3D: true,
-              });
-            }
-          });
-        };
+          gsap.set(card, { y: actualY, force3D: true });
 
-        gsap.ticker.add(tickerFunc);
-        return () => {
-          window.removeEventListener("resize", updateMetrics);
-          gsap.ticker.remove(tickerFunc);
-        };
-      },
+          const img = card.querySelector("img");
+          if (img) {
+            // THE FIX: Add initialPos for vertical mobile scrolling as well!
+            const trueCardCenter =
+              containerBounds.top + initialPos + actualY + cardHeight / 2;
 
-      "(max-width: 1023px)": function () {
-        if (cards.length === 0 || !cardContainer) return;
+            const distanceToCenter = trueCardCenter - viewportCenter;
+            const maxVisibleDistance = viewportCenter + cardHeight / 2;
 
-        let targetY = 0,
-          currentY = 0;
-        const ease = 0.08;
-        let itemHeight, totalHeight, wrapHeight, cardHeight, containerBounds;
+            let ratio = distanceToCenter / maxVisibleDistance;
+            ratio = gsap.utils.clamp(-1, 1, ratio);
 
-        function updateMetrics() {
-          cardHeight = cards[0].offsetHeight;
-          const gap = parseFloat(getComputedStyle(cardContainer).gap) || 0;
-          itemHeight = cardHeight + gap;
-          totalHeight = itemHeight * cards.length;
-          wrapHeight = gsap.utils.wrap(-itemHeight, totalHeight - itemHeight);
-          containerBounds = cardContainer.getBoundingClientRect();
-        }
+            const maxTravel = cardHeight * 0.1;
 
-        updateMetrics();
-        window.addEventListener("resize", updateMetrics);
-
-        Observer.create({
-          target: window,
-          type: "wheel,touch,pointer",
-          preventDefault: true,
-          onChange: (self) => {
-            const velocity = self.deltaY;
-            targetY -= velocity * 0.8;
-          },
+            gsap.set(img, {
+              y: ratio * -maxTravel,
+              scale: 1.2,
+              force3D: true,
+            });
+          }
         });
+      };
 
-        const tickerFunc = () => {
-          currentY += (targetY - currentY) * ease;
-          const viewportCenter = window.innerHeight / 2;
+      gsap.ticker.add(tickerFunc);
 
-          cards.forEach((card, i) => {
-            const initialPos = i * itemHeight;
-            const offset = wrapHeight(initialPos - currentY) - initialPos;
-            const actualY =
-              offset > totalHeight - itemHeight ? offset - totalHeight : offset;
-
-            gsap.set(card, { y: actualY, force3D: true });
-
-            const img = card.querySelector("img");
-            if (img) {
-              // THE FIX: Add initialPos for vertical mobile scrolling as well!
-              const trueCardCenter =
-                containerBounds.top + initialPos + actualY + cardHeight / 2;
-
-              const distanceToCenter = trueCardCenter - viewportCenter;
-              const maxVisibleDistance = viewportCenter + cardHeight / 2;
-
-              let ratio = distanceToCenter / maxVisibleDistance;
-              ratio = gsap.utils.clamp(-1, 1, ratio);
-
-              const maxTravel = cardHeight * 0.1;
-
-              gsap.set(img, {
-                y: ratio * -maxTravel,
-                scale: 1.2,
-                force3D: true,
-              });
-            }
-          });
-        };
-
-        gsap.ticker.add(tickerFunc);
-
-        return () => {
-          window.removeEventListener("resize", updateMetrics);
-          gsap.ticker.remove(tickerFunc);
-        };
-      },
+      return () => {
+        window.removeEventListener("resize", updateMetrics);
+        gsap.ticker.remove(tickerFunc);
+      };
     });
   }, container);
 }
@@ -790,7 +831,6 @@ function initContactAnimations(container) {
       });
     });
 
-    // --- Infinite Ticker Loop ---
     const photoContainers = gsap.utils.toArray(
       ".contact-animated-photos-container",
     );
@@ -799,18 +839,14 @@ function initContactAnimations(container) {
     let containerHeight;
     let wrapFunction;
     let currentY = 0;
-    const speed = 1.5; // Pixels per frame. Adjust for speed.
+    const speed = 1.5;
 
     function updateMetrics() {
-      // Get the height of one full container (usually 100vh)
       containerHeight = photoContainers[0].clientHeight;
 
-      // Wrap logic: when a container hits -containerHeight (off the top),
-      // it teleports to containerHeight (off the bottom)
       wrapFunction = gsap.utils.wrap(-containerHeight, containerHeight);
     }
 
-    // Initialize and handle window resizing
     updateMetrics();
     window.addEventListener("resize", updateMetrics);
 
@@ -818,13 +854,9 @@ function initContactAnimations(container) {
       currentY += speed;
 
       photoContainers.forEach((block, i) => {
-        // Container 0 starts at 0, Container 1 starts at containerHeight
         const initialOffset = i * containerHeight;
-
-        // Calculate the new Y position and wrap it if necessary
         const yPos = wrapFunction(initialOffset - currentY);
 
-        // Apply the movement
         gsap.set(block, {
           y: yPos,
           force3D: true,
@@ -1377,26 +1409,20 @@ barba.init({
           nextDom.querySelector(".product-details-description").textContent =
             productData.detailedDescription;
 
-          if (productData.gallery && productData.gallery.length > 0) {
-            const photoDivs = nextDom.querySelectorAll(
-              ".product-details-photos-container .photo",
-            );
-
-            photoDivs.forEach((div, index) => {
-              if (productData.gallery[index]) {
-                const imgEl = document.createElement("img");
-
-                imgEl.src = urlFor(productData.gallery[index]).url();
-                imgEl.alt = `${productData.name} - Gallery Image ${index + 1}`;
-
-                imgEl.style.width = "100%";
-                imgEl.style.height = "100%";
-                imgEl.style.objectFit = "cover";
-
-                div.appendChild(imgEl);
-              }
-            });
-          }
+          const photoDivs = nextDom.querySelectorAll(
+            ".product-details-photos-container .photo",
+          );
+          photoDivs.forEach((div, index) => {
+            if (productData.gallery && productData.gallery[index]) {
+              const imgEl = document.createElement("img");
+              imgEl.src = urlFor(productData.gallery[index]).url();
+              imgEl.alt = `${productData.name} - Gallery Image ${index + 1}`;
+              imgEl.style.width = "100%";
+              imgEl.style.height = "100%";
+              imgEl.style.objectFit = "cover";
+              div.appendChild(imgEl);
+            }
+          });
         }
       },
       afterEnter(data) {
@@ -1512,8 +1538,8 @@ barba.init({
         document.body.classList.add("is-transitioning");
         gsap.to(".transition", {
           y: "-100%",
-          duration: 1,
-          ease: "power3.inOut",
+          duration: 1.2,
+          ease: "expo.inOut",
           delay: 1.7,
           onComplete: () => {
             document.body.classList.remove("is-transitioning");
@@ -1523,6 +1549,8 @@ barba.init({
       leave(data) {
         const done = this.async();
         document.body.classList.add("is-transitioning");
+
+        ScrollTrigger.getAll().forEach((t) => t.kill());
 
         if (smoother) {
           smoother.scrollTo(smoother.scrollTop(), false);
@@ -1536,7 +1564,7 @@ barba.init({
         tl.fromTo(
           ".transition",
           { y: "100%" },
-          { y: "0%", duration: 0.8, ease: "power3.inOut" },
+          { y: "0%", duration: 1.2, ease: "expo.inOut" },
         );
       },
       enter(data) {
@@ -1558,8 +1586,8 @@ barba.init({
 
         tl.to(".transition", {
           y: "-100%",
-          duration: 0.8,
-          ease: "power3.inOut",
+          duration: 1.2,
+          ease: "expo.inOut",
         });
 
         gsap.fromTo(
