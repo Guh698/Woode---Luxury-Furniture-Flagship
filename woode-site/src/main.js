@@ -458,11 +458,11 @@ function initHomeAnimations(container) {
           });
 
           img.addEventListener("mouseenter", () => {
-            gsap.to(img, { scale: 1.1 });
+            gsap.to(img, { scale: 1.3 });
           });
 
           img.addEventListener("mouseleave", () => {
-            gsap.to(img, { scale: 1 });
+            gsap.to(img, { scale: 1.2 });
           });
         });
       });
