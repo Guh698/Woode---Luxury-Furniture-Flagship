@@ -500,6 +500,8 @@ function initProductPageAnimations(container) {
       ".product-details-photos-container .photo img",
     );
 
+    const productTimers = container.querySelectorAll(".product-timer");
+
     let mm = gsap.matchMedia();
 
     mm.add("(min-width: 1024px)", () => {
@@ -582,15 +584,23 @@ function initProductPageAnimations(container) {
 
           const currentImg = card.querySelector("img");
           const nextImg = nextCard.querySelector("img");
+          const currentTimer = productTimers[i];
 
           tl.set(nextCard, { zIndex: 2, xPercent: 100, autoAlpha: 1 })
             .set(nextImg, { xPercent: -15 })
+            .set(currentTimer, {
+              clipPath: "polygon(0% 0%, 0% 0%, 0% 100%, 0% 100%)",
+            })
+            .to(currentTimer, {
+              clipPath: "polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%)",
+              duration: 2,
+              ease: "none",
+            })
 
             .to(card, {
               xPercent: -100,
               duration: 1.2,
               ease: "power2.inOut",
-              delay: 2,
             })
             .to(
               nextCard,
@@ -751,7 +761,7 @@ function initProductsCategory(container) {
         type: "wheel,touch,pointer",
         preventDefault: true,
         onChange: (self) => {
-          const velocity = self.deltaY;
+          const velocity = self.deltaY * 1.7;
           targetY -= velocity * 0.8;
         },
       });
@@ -770,7 +780,6 @@ function initProductsCategory(container) {
 
           const img = card.querySelector("img");
           if (img) {
-            // THE FIX: Add initialPos for vertical mobile scrolling as well!
             const trueCardCenter =
               containerBounds.top + initialPos + actualY + cardHeight / 2;
 
@@ -1550,16 +1559,24 @@ barba.init({
         const done = this.async();
         document.body.classList.add("is-transitioning");
 
-        ScrollTrigger.getAll().forEach((t) => t.kill());
-
         if (smoother) {
-          smoother.scrollTo(smoother.scrollTop(), false);
           smoother.paused(true);
         }
 
         resetHeaderState();
 
-        let tl = gsap.timeline({ onComplete: done });
+        let tl = gsap.timeline({
+          onComplete: () => {
+            ScrollTrigger.getAll().forEach((t) => t.kill());
+
+            if (smoother) {
+              smoother.kill();
+              smoother = null;
+            }
+
+            done();
+          },
+        });
 
         tl.fromTo(
           ".transition",
@@ -1568,11 +1585,6 @@ barba.init({
         );
       },
       enter(data) {
-        if (smoother) {
-          smoother.kill();
-          smoother = null;
-        }
-
         const wrapper = document.querySelector(".smooth-wrapper");
         if (wrapper) wrapper.style.cssText = "";
 
