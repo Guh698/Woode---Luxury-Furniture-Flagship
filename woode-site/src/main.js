@@ -1610,6 +1610,7 @@ barba.init({
         document.body.style.touchAction = "none";
         gsap.set("header", { opacity: 0, pointerEvents: "none" });
         gsap.set("footer", { opacity: 0, pointerEvents: "none" });
+        gsap.set(".header-background", { y: "-100%" });
 
         const urlParams = new URLSearchParams(window.location.search);
         const currentCategory = urlParams.get("category");
