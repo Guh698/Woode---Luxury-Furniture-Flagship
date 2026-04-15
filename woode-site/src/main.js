@@ -1679,6 +1679,7 @@ barba.init({
   transitions: [
     {
       name: "default-transition",
+
       once(data) {
         document.body.classList.add("is-transitioning");
         gsap.to(".transition", {
@@ -1691,59 +1692,71 @@ barba.init({
           },
         });
       },
+
       leave(data) {
         const done = this.async();
         document.body.classList.add("is-transitioning");
 
-        if (smoother) {
-          smoother.paused(true);
-        }
+        if (smoother) smoother.paused(true);
 
-        resetHeaderState();
-
-        let tl = gsap.timeline({
+        const tl = gsap.timeline({
           onComplete: () => {
+            resetHeaderState();
             ScrollTrigger.getAll().forEach((t) => t.kill());
-
             if (smoother) {
               smoother.kill();
               smoother = null;
             }
-
             done();
           },
         });
 
-        tl.fromTo(
-          ".transition",
-          { y: "100%" },
-          { y: "0%", duration: 1.2, ease: "expo.inOut" },
-        );
+        tl.to(".transition-overlay", {
+          opacity: 0.3,
+          duration: 0.7,
+          ease: "power2.out",
+          pointerEvents: "auto",
+        })
+          .fromTo(
+            ".transition",
+            { y: "100%" },
+            { y: "0%", duration: 1.2, ease: "expo.inOut" },
+            "-=0.7",
+          )
+          .set(".transition-overlay", {
+            opacity: 0,
+            pointerEvents: "none",
+          });
       },
+
       enter(data) {
         const wrapper = document.querySelector(".smooth-wrapper");
         if (wrapper) wrapper.style.cssText = "";
 
         window.scrollTo(0, 0);
 
-        let tl = gsap.timeline({
+        const tl = gsap.timeline({
           onComplete: () => {
             document.body.classList.remove("is-transitioning");
+            gsap.set(".transition-overlay", {
+              opacity: 0,
+              pointerEvents: "none",
+            });
           },
-        });
-
-        tl.to(".transition", {
-          y: "-100%",
-          duration: 1.2,
-          ease: "expo.inOut",
         });
 
         gsap.fromTo(
           data.next.container,
           { opacity: 0 },
-          { opacity: 1, duration: 0.8, clearProps: "all" },
-          "<0.2",
+          { opacity: 1, duration: 0.6, ease: "power2.out", clearProps: "all" },
         );
+
+        tl.to(".transition", {
+          y: "-100%",
+          duration: 1.2,
+          ease: "expo.inOut",
+          delay: 0.1,
+        });
       },
     },
   ],

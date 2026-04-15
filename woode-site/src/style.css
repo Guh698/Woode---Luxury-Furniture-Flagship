@@ -49,6 +49,30 @@ body.is-product {
   overflow: hidden;
 }
 
+.transition {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  background-color: var(--dark-color);
+  z-index: 10000;
+  overflow: hidden;
+}
+
+.transition-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100dvh;
+  width: 100%;
+  background-color: var(--dark-color);
+  opacity: 0;
+  z-index: 9999;
+  pointer-events: none;
+  overflow: hidden;
+}
+
 .visually-hidden {
   position: absolute;
   width: 1px;
@@ -1016,16 +1040,6 @@ footer span {
   display: flex;
   align-self: flex-end;
   text-transform: uppercase;
-}
-
-.transition {
-  position: fixed;
-  top: 0;
-  left: 0;
-  height: 100%;
-  width: 100vw;
-  background-color: var(--dark-color);
-  z-index: 10000;
 }
 
 @media (min-width: 1920px) {
