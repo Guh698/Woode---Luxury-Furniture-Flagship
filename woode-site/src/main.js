@@ -92,7 +92,7 @@ function initSmoother(contentEl) {
   if (ScrollSmoother.get()) ScrollSmoother.get().kill();
   let mm = gsap.matchMedia();
 
-  mm.add("(min-width: 1024px)", () => {
+  mm.add("(min-width: 1025px)", () => {
     smoother = ScrollSmoother.create({
       wrapper: ".smooth-wrapper",
       content: contentEl,
@@ -100,7 +100,7 @@ function initSmoother(contentEl) {
       effects: false,
     });
   });
-  mm.add("(max-width: 1023px)", () => {
+  mm.add("(max-width: 1024px)", () => {
     smoother = ScrollSmoother.create({
       wrapper: ".smooth-wrapper",
       content: contentEl,
@@ -274,7 +274,7 @@ function initHomeAnimations(container) {
     if (theEdit && animWrapper) {
       let mm = gsap.matchMedia();
 
-      mm.add("(min-width: 1024px)", () => {
+      mm.add("(min-width: 1025px)", () => {
         const extraHeight = theEdit.offsetHeight - window.innerHeight;
         if (extraHeight > 0) {
           gsap.set(animWrapper, { marginBottom: extraHeight });
@@ -381,7 +381,7 @@ function initHomeAnimations(container) {
         });
       });
 
-      mm.add("(max-width: 1023px)", () => {
+      mm.add("(max-width: 1024px)", () => {
         if (timerContainer && images.length > 0) {
           timerContainer.innerHTML = "";
           images.forEach(() => {
@@ -504,7 +504,7 @@ function initProductPageAnimations(container) {
 
     let mm = gsap.matchMedia();
 
-    mm.add("(min-width: 1024px)", () => {
+    mm.add("(min-width: 1025px)", () => {
       let productPhotosTl = gsap.timeline({
         scrollTrigger: {
           trigger: ".product-details",
@@ -562,7 +562,7 @@ function initProductPageAnimations(container) {
       }
     });
 
-    mm.add("(max-width: 1023px)", () => {
+    mm.add("(max-width: 1024px)", () => {
       if (galleryCards.length > 0 && galleryImages.length > 0) {
         gsap.set(galleryImages, {
           scale: 1.15,
@@ -666,7 +666,7 @@ function initProductsCategory(container) {
 
     let mm = gsap.matchMedia();
 
-    mm.add("(min-width: 1024px)", () => {
+    mm.add("(min-width: 1025px)", () => {
       if (cards.length === 0 || !cardContainer) return;
 
       let targetX = 0,
@@ -736,7 +736,7 @@ function initProductsCategory(container) {
         gsap.ticker.remove(tickerFunc);
       };
     });
-    mm.add("(max-width: 1023px)", () => {
+    mm.add("(max-width: 1024px)", () => {
       if (cards.length === 0 || !cardContainer) return;
 
       let targetY = 0,
@@ -1322,6 +1322,130 @@ function initGlobalHeader() {
   });
 }
 
+function initGlobalButtons(container) {
+  let ButtonsContext = gsap.context(() => {
+    const buttons = container.querySelectorAll("button");
+
+    buttons.forEach((btn) => {
+      const btnOverlay = btn.querySelector(".button-overlay");
+      const btnMessage = btn.querySelector(".button-overlay-message");
+      const btnDefaultMessage = btn.querySelector(".button-default-message");
+
+      const splitMessage = new SplitText(btnMessage, { type: "words, chars" });
+      const splitDefaultMessage = new SplitText(btnDefaultMessage, {
+        type: "words, chars",
+      });
+
+      gsap.set(splitMessage.chars, { y: "100%", opacity: 0 });
+
+      let isHovered = false;
+
+      btn.addEventListener("mouseenter", () => {
+        isHovered = true;
+
+        gsap.to(splitDefaultMessage.chars, {
+          y: "-100%",
+          opacity: 0,
+          stagger: { amount: 0.3 },
+          ease: "expo.inOut",
+          overwrite: true,
+          onComplete: () => {
+            gsap.set(splitDefaultMessage.chars, { y: "100%" });
+            if (!isHovered) {
+              gsap.to(splitDefaultMessage.chars, {
+                y: "0%",
+                opacity: 1,
+                stagger: { amount: 0.3 },
+                ease: "expo.inOut",
+              });
+            }
+          },
+        });
+
+        gsap.to(btnOverlay, {
+          y: "-100%",
+          duration: 0.7,
+          ease: "expo.inOut",
+          overwrite: true,
+          onComplete: () => {
+            gsap.set(btnOverlay, { y: "100%" });
+            if (!isHovered) {
+              gsap.to(btnOverlay, {
+                y: "0%",
+                duration: 0.7,
+                ease: "expo.inOut",
+              });
+            }
+          },
+        });
+
+        gsap.fromTo(
+          splitMessage.chars,
+          { y: "100%", opacity: 0 },
+          {
+            y: "0%",
+            opacity: 1,
+            stagger: { amount: 0.3 },
+            ease: "expo.inOut",
+            overwrite: true,
+            onComplete: () => {
+              if (!isHovered) {
+                gsap.to(splitMessage.chars, {
+                  y: "-70%",
+                  opacity: 0,
+                  stagger: { amount: 0.3 },
+                  ease: "expo.inOut",
+                });
+              }
+            },
+          },
+        );
+      });
+
+      btn.addEventListener("mouseleave", () => {
+        isHovered = false;
+
+        if (!gsap.isTweening(splitDefaultMessage.chars[0])) {
+          gsap.fromTo(
+            splitDefaultMessage.chars,
+            { y: "100%" },
+            {
+              y: "0%",
+              opacity: 1,
+              stagger: { amount: 0.3 },
+              ease: "expo.inOut",
+              overwrite: true,
+            },
+          );
+        }
+
+        if (!gsap.isTweening(btnOverlay)) {
+          gsap.to(btnOverlay, {
+            y: "0%",
+            duration: 0.7,
+            ease: "expo.inOut",
+            overwrite: true,
+          });
+        }
+
+        if (!gsap.isTweening(splitMessage.chars[0])) {
+          gsap.to(splitMessage.chars, {
+            y: "-70%",
+            opacity: 0,
+            stagger: { amount: 0.3 },
+            ease: "expo.inOut",
+            overwrite: true,
+          });
+        }
+      });
+    });
+  });
+}
+
+function killinitGlobalButtons() {
+  if (ButtonsContext) ButtonsContext.revert();
+}
+
 function resetHeaderState() {
   gsap.set(".header-background", { y: "-100%" });
   gsap.set(".hover-line", { x: "-100%" });
@@ -1339,7 +1463,6 @@ function resetHeaderState() {
     ease: "power2.inOut",
   });
 
-  // ADD THESE TWO LINES:
   activeMenuTarget = null;
   isMenuAnimating = false;
   activedMenu = false;
@@ -1369,10 +1492,12 @@ barba.init({
       afterEnter(data) {
         initSmoother(data.next.container);
         initHomeAnimations(data.next.container);
+        initGlobalButtons(data.next.container);
         setTimeout(() => ScrollTrigger.refresh(), 600);
       },
       afterLeave() {
         killHome();
+        killinitGlobalButtons();
       },
       beforeLeave() {
         gsap.to(".categories-tab-overlay", {
@@ -1408,10 +1533,12 @@ barba.init({
             productData.materials;
           nextDom.querySelector(".product-dimensions").textContent =
             productData.dimensions;
+          const mainPhoto = nextDom.querySelector(".product-main-photo");
           if (productData.highlightImage) {
-            nextDom.querySelector(".product-main-photo").src = urlFor(
-              productData.highlightImage,
-            ).url();
+            mainPhoto.src = urlFor(productData.highlightImage).url();
+          } else {
+            mainPhoto.src =
+              "https://res.cloudinary.com/dabshzrnj/image/upload/v1776100976/Screenshot_2026-03-17_at_16-31-22_black_-_Pesquisa_Google_2_xv6wow.webp";
           }
           nextDom.querySelector(".product-description").textContent =
             productData.shortDescription;
@@ -1436,13 +1563,14 @@ barba.init({
       },
       afterEnter(data) {
         initSmoother(data.next.container);
-
         initProductPageAnimations(data.next.container);
+        initGlobalButtons(data.next.container);
 
         setTimeout(() => ScrollTrigger.refresh(), 600);
       },
       afterLeave() {
         killProductPage();
+        killinitGlobalButtons();
         gsap.set(".header-background", { y: "-100%" });
       },
       beforeLeave() {
@@ -1508,11 +1636,19 @@ barba.init({
 
           categoryProducts.forEach((product, index) => {
             if (cards[index]) {
-              cards[index].innerHTML = `
+              if (product.mainImage) {
+                cards[index].innerHTML = `
                 <a href="product-page.html?slug=${product.slug}" style="display:block; width:100%; height:100%; text-decoration:none;">
                   <img src="${urlFor(product.mainImage).url()}" alt="${product.name}" style="width:100%; height:100%; object-fit:cover; transform: scale(1.2);">
                 </a>
               `;
+              } else {
+                cards[index].innerHTML = `
+                <a href="product-page.html?slug=${product.slug}" style="display:block; width:100%; height:100%; text-decoration:none;">
+                  <img src="https://res.cloudinary.com/dabshzrnj/image/upload/v1776100976/Screenshot_2026-03-17_at_16-31-22_black_-_Pesquisa_Google_2_xv6wow.webp" alt="${product.name}" style="width:100%; height:100%; object-fit:cover; transform: scale(1.2);">
+                </a>
+              `;
+              }
             }
           });
         }
