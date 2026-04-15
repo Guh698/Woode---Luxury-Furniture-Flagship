@@ -1617,14 +1617,14 @@ footer span {
 
 /*mobile*/
 @media (max-width: 768px) {
-  .the-edit h2 {
+  /*.the-edit h2 {
     line-height: 1;
     font-size: var(--fs-xl);
   }
 
   .the-edit-first-container {
     grid-template-rows: auto 1fr auto 1fr;
-  }
+  }*/
 }
 
 /*small mobile*/
