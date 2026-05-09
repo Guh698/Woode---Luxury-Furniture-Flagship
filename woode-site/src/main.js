@@ -3,7 +3,7 @@ if ("scrollRestoration" in history) {
 }
 
 import { createClient } from "@sanity/client";
-import imageUrlBuilder from "@sanity/image-url";
+import { createImageUrlBuilder } from "@sanity/image-url";
 import "./style.css";
 
 gsap.registerPlugin(
@@ -19,6 +19,8 @@ let smoother;
 let homeCtx;
 let productPageCtx;
 let productsCtx;
+let contactCtx;
+let ButtonsContext;
 let homeAbortController;
 let activeMenuTarget = null;
 let isMenuAnimating = false;
@@ -32,7 +34,7 @@ const client = createClient({
   useCdn: true,
   apiVersion: "2024-02-09",
 });
-const builder = imageUrlBuilder(client);
+const builder = createImageUrlBuilder(client);
 const urlFor = (source) => builder.image(source);
 
 const homeQuery = `*[_type == "home"][0]{
@@ -275,11 +277,6 @@ function initHomeAnimations(container) {
       let mm = gsap.matchMedia();
 
       mm.add("(min-width: 1025px)", () => {
-        const extraHeight = theEdit.offsetHeight - window.innerHeight;
-        if (extraHeight > 0) {
-          gsap.set(animWrapper, { marginBottom: extraHeight });
-        }
-
         if (timerContainer && images.length > 0) {
           timerContainer.innerHTML = "";
           images.forEach(() => {
@@ -331,6 +328,7 @@ function initHomeAnimations(container) {
           scrollTrigger: {
             trigger: ".animation-wrapper",
             start: "top top",
+            end: "+=700",
             pin: true,
             scrub: true,
             ease: "none",
@@ -815,7 +813,7 @@ function killProductsCategory() {
 }
 
 function initContactAnimations(container) {
-  let contactCtx = gsap.context(() => {
+  contactCtx = gsap.context(() => {
     const backToHomeLink = document.querySelector(".back-to-home-btn");
     const hoverLine = document.querySelector(".hover-line");
 
@@ -874,8 +872,11 @@ function initContactAnimations(container) {
     };
 
     gsap.ticker.add(contactTickerFunc);
-
-    return () => gsap.ticker.remove(contactTickerFunc);
+    window.addEventListener("resize", updateMetrics);
+    return () => {
+      gsap.ticker.remove(contactTickerFunc);
+      window.removeEventListener("resize", updateMetrics); // ← add this
+    };
   }, container);
 }
 
@@ -1323,7 +1324,7 @@ function initGlobalHeader() {
 }
 
 function initGlobalButtons(container) {
-  let ButtonsContext = gsap.context(() => {
+  ButtonsContext = gsap.context(() => {
     const buttons = container.querySelectorAll("button");
 
     buttons.forEach((btn) => {
@@ -1439,7 +1440,7 @@ function initGlobalButtons(container) {
         }
       });
     });
-  });
+  }, container);
 }
 
 function killinitGlobalButtons() {
@@ -1474,12 +1475,12 @@ let transitionTl = gsap.timeline();
 
 barba.init({
   sync: false,
-  debug: true,
 
   views: [
     {
       namespace: "home",
       async beforeEnter(data) {
+        window.scrollTo(0, 0);
         gsap.set(["header, footer"], { opacity: 1, pointerEvents: "auto" });
         gsap.set(".header-background", { y: "-100%" });
         document.body.classList.add("is-home");
@@ -1682,6 +1683,9 @@ barba.init({
       name: "default-transition",
 
       once(data) {
+        window.scrollTo(0, 0);
+        if (smoother) smoother.paused(true);
+
         document.body.classList.add("is-transitioning");
         gsap.to(".transition", {
           y: "-100%",
@@ -1690,6 +1694,7 @@ barba.init({
           delay: 1.7,
           onComplete: () => {
             document.body.classList.remove("is-transitioning");
+            ScrollTrigger.refresh();
           },
         });
       },

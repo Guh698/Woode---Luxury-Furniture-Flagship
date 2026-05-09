@@ -54,7 +54,7 @@ body.is-product {
   top: 0;
   left: 0;
   height: 100%;
-  width: 100%;
+  width: 100vw;
   background-color: var(--dark-color);
   z-index: 10000;
   overflow: hidden;
@@ -147,6 +147,7 @@ header {
   text-transform: uppercase;
   font-size: var(--fs-xs);
   z-index: 200;
+  overflow: hidden;
 }
 
 header .wordmark {
@@ -384,6 +385,11 @@ header a {
   cursor: pointer;
 }
 
+.animation-wrapper {
+  overflow: hidden;
+  height: 300vh;
+}
+
 .hero {
   position: relative;
   display: flex;
@@ -397,6 +403,7 @@ header a {
   margin-right: -3px;
   margin-bottom: 0;
   margin-top: 0;
+  overflow: hidden;
 }
 
 .hero-background {
@@ -1252,6 +1259,10 @@ footer span {
     transform: translateY(10px);
   }
 
+  .animation-wrapper {
+    height: auto;
+  }
+
   .hero {
     flex-direction: column;
     justify-content: center;
@@ -1282,7 +1293,7 @@ footer span {
 
   .the-edit {
     position: relative;
-    height: 350vh;
+    height: 360vh; /*110vh +  150vh + 100vh*/
     transform: translateY(0);
   }
 
@@ -1366,6 +1377,7 @@ footer span {
     display: flex;
     flex-direction: column;
     gap: 2rem;
+    height: 100vh;
   }
 
   .the-edit-third-container .grid-container {
