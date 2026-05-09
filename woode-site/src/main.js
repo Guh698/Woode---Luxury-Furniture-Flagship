@@ -221,8 +221,14 @@ async function populateHomeData(container) {
       bgContainer.innerHTML = "";
       data.heroImages.forEach((imgData) => {
         const imgEl = document.createElement("img");
-        imgEl.src = urlFor(imgData).width(1920).url();
+        imgEl.src = urlFor(imgData)
+          .width(1920)
+          .format("webp")
+          .quality(75)
+          .url();
         imgEl.alt = imgData.alt || "Woode Interior";
+        imgEl.loading = "lazy";
+        imgEl.decoding = "async";
         bgContainer.appendChild(imgEl);
       });
     }
@@ -695,6 +701,7 @@ function initProductsCategory(container) {
       });
 
       const tickerFunc = () => {
+        if (Math.abs(targetX - currentX) < 0.01) return;
         currentX += (targetX - currentX) * ease;
         const viewportCenter = window.innerWidth / 2;
 
@@ -765,6 +772,7 @@ function initProductsCategory(container) {
       });
 
       const tickerFunc = () => {
+        if (Math.abs(targetX - currentX) < 0.01) return;
         currentY += (targetY - currentY) * ease;
         const viewportCenter = window.innerHeight / 2;
 
@@ -1557,6 +1565,8 @@ barba.init({
               imgEl.style.width = "100%";
               imgEl.style.height = "100%";
               imgEl.style.objectFit = "cover";
+              imgEl.loading = "lazy";
+              imgEl.decoding = "async";
               div.appendChild(imgEl);
             }
           });
@@ -1641,7 +1651,7 @@ barba.init({
               if (product.mainImage) {
                 cards[index].innerHTML = `
                 <a href="product-page.html?slug=${product.slug}" style="display:block; width:100%; height:100%; text-decoration:none;">
-                  <img src="${urlFor(product.mainImage).url()}" alt="${product.name}" style="width:100%; height:100%; object-fit:cover; transform: scale(1.2);">
+                  <img src="${urlFor(product.mainImage).width(800).format("webp").quality(80).url()}" alt="${product.name}" style="width:100%; height:100%; object-fit:cover; transform: scale(1.2);">
                 </a>
               `;
               } else {
