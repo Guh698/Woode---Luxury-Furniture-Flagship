@@ -772,7 +772,7 @@ function initProductsCategory(container) {
       });
 
       const tickerFunc = () => {
-        if (Math.abs(targetX - currentX) < 0.01) return;
+        if (Math.abs(targetY - currentY) < 0.01) return;
         currentY += (targetY - currentY) * ease;
         const viewportCenter = window.innerHeight / 2;
 

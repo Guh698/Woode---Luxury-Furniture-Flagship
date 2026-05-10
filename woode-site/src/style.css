@@ -1296,7 +1296,7 @@ footer span {
 
   .the-edit {
     position: relative;
-    height: 360vh; /*110vh +  150vh + 100vh*/
+    height: 350vh;
     transform: translateY(0);
   }
 
@@ -1380,7 +1380,7 @@ footer span {
     display: flex;
     flex-direction: column;
     gap: 2rem;
-    height: 100vh;
+    height: 90vh;
   }
 
   .the-edit-third-container .grid-container {
@@ -1571,6 +1571,7 @@ footer span {
       "product       product";
     align-items: safe;
     justify-content: safe;
+    padding: 0 2rem;
   }
 
   h1.products-category-title {
