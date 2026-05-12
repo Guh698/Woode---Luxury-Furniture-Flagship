@@ -20,6 +20,7 @@ let homeCtx;
 let productPageCtx;
 let productsCtx;
 let contactCtx;
+let PageNotFoundCtx;
 let ButtonsContext;
 let homeAbortController;
 let activeMenuTarget = null;
@@ -883,13 +884,35 @@ function initContactAnimations(container) {
     window.addEventListener("resize", updateMetrics);
     return () => {
       gsap.ticker.remove(contactTickerFunc);
-      window.removeEventListener("resize", updateMetrics); // ← add this
+      window.removeEventListener("resize", updateMetrics);
     };
   }, container);
 }
 
 function killContact() {
   if (contactCtx) contactCtx.revert();
+}
+
+function initPageNotFoundAnimations(container) {
+  PageNotFoundCtx = gsap.context(() => {
+    const backToHomeLink = document.querySelector(".back-to-home-btn");
+    const hoverLine = document.querySelector(".hover-line");
+
+    backToHomeLink.addEventListener("mouseenter", () =>
+      gsap.fromTo(
+        hoverLine,
+        { x: "-100%" },
+        { x: "0%", duration: 0.4, overwrite: true },
+      ),
+    );
+    backToHomeLink.addEventListener("mouseleave", () =>
+      gsap.to(hoverLine, { x: "100%", duration: 0.4, overwrite: true }),
+    );
+  }, container);
+}
+
+function killPageNotFound() {
+  if (PageNotFoundCtx) PageNotFoundCtx.revert();
 }
 
 function initGlobalHeader() {
@@ -1607,6 +1630,26 @@ barba.init({
       },
       afterLeave() {
         killContact();
+        gsap.set(["header, footer"], { opacity: 1, pointerEvents: "auto" });
+        gsap.set(".header-background", { y: "-100%" });
+      },
+    },
+    {
+      namespace: "pageNotFound",
+      beforeEnter() {
+        document.body.classList.remove("is-home");
+        document.body.classList.add("is-product");
+        document.body.style.overflow = "hidden";
+        document.body.style.height = "100vh";
+        document.body.style.touchAction = "none";
+        gsap.set(["header, footer"], { opacity: 0, pointerEvents: "none" });
+        gsap.set(".header-background", { y: "-100%" });
+      },
+      afterEnter(data) {
+        initPageNotFoundAnimations(data.next.container);
+      },
+      afterLeave() {
+        killPageNotFound();
         gsap.set(["header, footer"], { opacity: 1, pointerEvents: "auto" });
         gsap.set(".header-background", { y: "-100%" });
       },

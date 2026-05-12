@@ -996,6 +996,37 @@ h1.products-category-title {
   grid-area: photo4;
 }
 
+.page-not-found-hero {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  grid-template-rows: repeat(4, 1fr);
+  grid-template-areas:
+    ".              .              .              .             ."
+    "title          title          title          title         ."
+    "home-btn     .              .              address       ."
+    ".              .              .              .             .";
+  gap: 2rem;
+  padding: 2rem;
+  height: 100vh;
+  width: 100%;
+}
+
+.page-not-found-hero h1 {
+  grid-area: title;
+  display: flex;
+  align-self: start;
+  line-height: 100px;
+  color: var(--dark-color);
+  font-family: var(--destac-font-family);
+  text-transform: uppercase;
+  font-size: var(--fs-xl);
+}
+
+.page-not-found-hero a {
+  grid-area: home-btn;
+}
+
 footer {
   position: relative;
   display: grid;
@@ -1560,6 +1591,19 @@ footer span {
 
   .contact-carousel-wrapper {
     display: none;
+  }
+
+  .page-not-found-hero {
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-areas:
+      "title          title  "
+      "home-btn       .      "
+      ".              .      "
+      ".              .       ";
+  }
+
+  .page-not-found-hero h1 {
+    font-size: var(--fs-xl);
   }
 
   .products-category-hero {
