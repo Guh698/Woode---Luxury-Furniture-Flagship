@@ -9,6 +9,7 @@ export default defineConfig({
         product: resolve(__dirname, "product-page.html"),
         category: resolve(__dirname, "products-category.html"),
         contact: resolve(__dirname, "contact.html"),
+        prediction: resolve(__dirname, "404.html"),
       },
     },
   },

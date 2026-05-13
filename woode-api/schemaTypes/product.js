@@ -51,6 +51,7 @@ export default {
           {title: 'Spring/Summer26', value: 'spring/summer26'},
           {title: 'Autumn/Winter26', value: 'autumn/winter26'},
           {title: 'Signature Pieces', value: 'signature-pieces'},
+          {title: 'The Edit', value: 'the-edit'},
         ],
         layout: 'dropdown',
       },
