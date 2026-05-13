@@ -340,8 +340,13 @@ function initHomeAnimations(container) {
             scrub: true,
             ease: "none",
             invalidateOnRefresh: true,
+            onComplete() {
+              gsap.set(".the-edit", { clearProps: "will-change" });
+            },
           },
         });
+
+        gsap.set(".the-edit", { force3D: true });
 
         theEditTl
           .to(".the-edit", { y: 0, ease: "none" })
@@ -356,6 +361,7 @@ function initHomeAnimations(container) {
 
           gsap.to(img, {
             y: "10%",
+            force3D: true,
             ease: "none",
             scrollTrigger: {
               trigger: imgContainer,
@@ -367,6 +373,7 @@ function initHomeAnimations(container) {
 
           gsap.to(hoveredImg, {
             y: "10%",
+            force3D: true,
             ease: "none",
             scrollTrigger: {
               trigger: imgContainer,
@@ -505,7 +512,39 @@ function initProductPageAnimations(container) {
       ".product-details-photos-container .photo img",
     );
 
-    const productTimers = container.querySelectorAll(".product-timer");
+    const productTimers = container.querySelector(
+      ".product-details-photos-container .photo img",
+    );
+
+    const continueCurating = container.querySelectorAll(
+      ".recommended-products-product",
+    );
+
+    const continueCuratingImages = container.querySelectorAll(
+      ".recommended-products-product img",
+    );
+
+    continueCuratingImages.forEach((img) => {
+      gsap.to(img, {
+        y: "10%",
+        force3D: true,
+        ease: "none",
+        scrollTrigger: {
+          trigger: continueCurating,
+          start: "top bottom",
+          end: "bottom top",
+          scrub: true,
+        },
+      });
+
+      img.addEventListener("mouseenter", () => {
+        gsap.to(img, { scale: 1.3 });
+      });
+
+      img.addEventListener("mouseleave", () => {
+        gsap.to(img, { scale: 1.2 });
+      });
+    });
 
     let mm = gsap.matchMedia();
 
@@ -1549,11 +1588,11 @@ barba.init({
         gsap.set(".header-background", { y: 0 });
 
         const urlParams = new URLSearchParams(window.location.search);
-
         const currentSlug = urlParams.get("slug");
 
         if (currentSlug) {
           const nextDom = data.next.container;
+
           const query = `*[_type == "product" && slug.current == "${currentSlug}"][0]`;
           const productData = await client.fetch(query);
 
@@ -1565,6 +1604,7 @@ barba.init({
             productData.materials;
           nextDom.querySelector(".product-dimensions").textContent =
             productData.dimensions;
+
           const mainPhoto = nextDom.querySelector(".product-main-photo");
           if (productData.highlightImage) {
             mainPhoto.src = urlFor(productData.highlightImage).url();
@@ -1591,6 +1631,52 @@ barba.init({
               imgEl.loading = "lazy";
               imgEl.decoding = "async";
               div.appendChild(imgEl);
+            }
+          });
+
+          const homeRecommendationsQuery = `*[_type == "home"][0]{
+            editFirstProduct->{"slug": slug.current, mainImage},
+            editSecondProduct->{"slug": slug.current, mainImage},
+            editThirdProduct->{"slug": slug.current, mainImage},
+            editFourthProduct->{"slug": slug.current, mainImage},
+            editFifthProduct->{"slug": slug.current, mainImage},
+            editSixthProduct->{"slug": slug.current, mainImage},
+            editSeventhProduct->{"slug": slug.current, mainImage}
+          }`;
+
+          const homeData = await client.fetch(homeRecommendationsQuery);
+
+          const allEditProducts = [
+            homeData.editFirstProduct,
+            homeData.editSecondProduct,
+            homeData.editThirdProduct,
+            homeData.editFourthProduct,
+            homeData.editFifthProduct,
+            homeData.editSixthProduct,
+            homeData.editSeventhProduct,
+          ].filter(
+            (product) =>
+              product && product.slug && product.slug !== currentSlug,
+          );
+
+          const shuffledProducts = allEditProducts.sort(
+            () => 0.5 - Math.random(),
+          );
+          const recommendedProducts = shuffledProducts.slice(0, 3);
+
+          const recommendationContainers = [
+            nextDom.querySelector(".product1"),
+            nextDom.querySelector(".product2"),
+            nextDom.querySelector(".product3"),
+          ];
+
+          recommendedProducts.forEach((prod, index) => {
+            if (recommendationContainers[index] && prod.mainImage) {
+              recommendationContainers[index].innerHTML = `
+                <a href="product-page.html?slug=${prod.slug}" style="display: block; width: 100%; height: 100%; text-decoration: none;">
+                  <img src="${urlFor(prod.mainImage).width(800).format("webp").quality(80).url()}" alt="Recommended Product" style="width: 100%; height: 100%; object-fit: cover;">
+                </a>
+              `;
             }
           });
         }

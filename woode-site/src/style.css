@@ -802,9 +802,20 @@ header a {
 }
 
 .recommended-products-product {
+  position: relative;
   background-color: var(--dark-color);
   width: 33.3%;
   height: 100%;
+  overflow: hidden;
+}
+
+.recommended-products-product img {
+  object-fit: cover;
+  height: 100%;
+  width: 100%;
+  object-position: center;
+  transform: scale(1.2) translateY(-10%);
+  cursor: pointer;
 }
 
 .products-category-hero {
