@@ -4,7 +4,7 @@ if ("scrollRestoration" in history) {
 
 import { createClient } from "@sanity/client";
 import { createImageUrlBuilder } from "@sanity/image-url";
-import "./style.css";
+import "./style-min.css";
 
 gsap.registerPlugin(
   MorphSVGPlugin,
