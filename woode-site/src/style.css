@@ -1604,6 +1604,7 @@ footer span {
 
   .page-not-found-hero h1 {
     font-size: var(--fs-xl);
+    line-height: 0.97;
   }
 
   .products-category-hero {
