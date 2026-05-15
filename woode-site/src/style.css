@@ -1309,10 +1309,14 @@ footer span {
     background-color: var(--dark-color);
     z-index: 100;
     transform: translateX(100%);
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
   }
 
   .menu-categories {
     display: flex;
+    min-height: calc(100% - 10rem);
+    height: auto;
     transform: translateY(10rem);
     flex-direction: column;
   }
@@ -1359,9 +1363,12 @@ footer span {
   }
 
   .menu-contact-link {
-    position: absolute;
-    bottom: 2rem;
-    left: 2rem;
+    display: flex;
+    align-self: flex-start;
+    justify-self: end;
+    margin-top: auto;
+    margin-bottom: 2rem;
+    margin-left: 2rem;
     color: var(--light-color);
     text-transform: uppercase;
     font-size: var(--fs-xs);
