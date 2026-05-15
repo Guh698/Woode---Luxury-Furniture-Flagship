@@ -21,6 +21,7 @@ let productPageCtx;
 let productsCtx;
 let contactCtx;
 let PageNotFoundCtx;
+let PrivacyPolicyCtx;
 let ButtonsContext;
 let homeAbortController;
 let activeMenuTarget = null;
@@ -954,6 +955,28 @@ function killPageNotFound() {
   if (PageNotFoundCtx) PageNotFoundCtx.revert();
 }
 
+function initPrivacyPolicyAnimations(container) {
+  PrivacyPolicyCtx = gsap.context(() => {
+    const backToHomeLink = document.querySelector(".back-to-home-btn");
+    const hoverLine = document.querySelector(".hover-line");
+
+    backToHomeLink.addEventListener("mouseenter", () =>
+      gsap.fromTo(
+        hoverLine,
+        { x: "-100%" },
+        { x: "0%", duration: 0.4, overwrite: true },
+      ),
+    );
+    backToHomeLink.addEventListener("mouseleave", () =>
+      gsap.to(hoverLine, { x: "100%", duration: 0.4, overwrite: true }),
+    );
+  }, container);
+}
+
+function killPrivacyPolicy() {
+  if (PrivacyPolicyCtx) PrivacyPolicyCtx.revert();
+}
+
 function initGlobalHeader() {
   const headerLinks = document.querySelectorAll(".header-link");
   const livingLink = document.getElementById("living_link");
@@ -1721,7 +1744,7 @@ barba.init({
       },
     },
     {
-      namespace: "pageNotFound",
+      namespace: "page-not-found",
       beforeEnter() {
         document.body.classList.remove("is-home");
         document.body.classList.add("is-product");
@@ -1813,6 +1836,26 @@ barba.init({
         killProductsCategory();
         gsap.set("header", { opacity: 1, pointerEvents: "auto" });
         gsap.set("footer", { opacity: 1, pointerEvents: "auto" });
+      },
+    },
+    {
+      namespace: "privacy-policy",
+      beforeEnter() {
+        document.body.classList.remove("is-home");
+        document.body.classList.add("is-product");
+        document.body.style.overflow = "hidden";
+        document.body.style.height = "100vh";
+        document.body.style.touchAction = "none";
+        gsap.set(["header, footer"], { opacity: 0, pointerEvents: "none" });
+        gsap.set(".header-background", { y: "-100%" });
+      },
+      afterEnter(data) {
+        initPrivacyPolicyAnimations(data.next.container);
+      },
+      afterLeave() {
+        killPrivacyPolicy();
+        gsap.set(["header, footer"], { opacity: 1, pointerEvents: "auto" });
+        gsap.set(".header-background", { y: "-100%" });
       },
     },
   ],

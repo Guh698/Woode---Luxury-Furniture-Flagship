@@ -29,6 +29,10 @@ html {
   --fs-giant: clamp(7rem, 12vw, 17rem);
 }
 
+::selection {
+  background-color: #00000010;
+}
+
 body {
   background-color: var(--light-color);
   font-family: var(--default-font-family);
@@ -1038,6 +1042,63 @@ h1.products-category-title {
   grid-area: home-btn;
 }
 
+.privacy-policy-hero {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  grid-template-rows: repeat(4, 1fr);
+  grid-template-areas:
+    "title          title          title          title             ."
+    "home-btn       .              subtitle       update-data       ."
+    ".              .              text           text              ."
+    ".              .              .              .                 .";
+  gap: 2rem;
+  padding: 2rem;
+  height: 100vh;
+  width: 100%;
+}
+
+.privacy-policy-hero h1 {
+  grid-area: title;
+  display: flex;
+  align-self: start;
+  line-height: 100px;
+  color: var(--dark-color);
+  font-family: var(--destac-font-family);
+  text-transform: uppercase;
+  font-size: var(--fs-xl);
+}
+
+.privacy-policy-hero a {
+  grid-area: home-btn;
+}
+
+.privacy-policy-hero h2 {
+  grid-area: subtitle;
+  text-transform: uppercase;
+  color: var(--dark-color);
+  font-size: var(--fs-xs);
+  font-family: var(--default-font-family);
+  font-weight: var(--light-weight-font);
+}
+
+.privacy-policy-hero span {
+  grid-area: update-data;
+  text-transform: uppercase;
+  color: var(--dark-color);
+  font-size: var(--fs-xs);
+  font-family: var(--default-font-family);
+  font-weight: var(--light-weight-font);
+}
+
+.privacy-policy-hero p {
+  grid-area: text;
+  font-family: var(--default-font-family);
+  font-size: var(--fs-xs);
+  color: var(--dark-color);
+  text-align: justify;
+}
+
 footer {
   position: relative;
   display: grid;
@@ -1077,6 +1138,10 @@ footer ul {
 
 footer ul li {
   cursor: pointer;
+}
+
+footer ul li a {
+  color: var(--light-color);
 }
 
 .footer-list1 {
@@ -1660,6 +1725,19 @@ footer span {
     width: 80vw;
     padding: 2rem;
     transform: translateX(-50%);
+  }
+
+  .privacy-policy-hero {
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-areas:
+      "title          title       "
+      "home-btn       update-data "
+      "subtitle       text        "
+      ".              text       ";
+  }
+
+  .privacy-policy-hero h1 {
+    line-height: 0.97;
   }
 
   footer {
