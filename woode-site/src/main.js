@@ -1586,6 +1586,7 @@ barba.init({
     {
       namespace: "home",
       async beforeEnter(data) {
+        document.title = "Woode | Luxury Home & Decor";
         window.scrollTo(0, 0);
         gsap.set(["header, footer"], { opacity: 1, pointerEvents: "auto" });
         gsap.set(".header-background", { y: "-100%" });
@@ -1631,6 +1632,13 @@ barba.init({
 
           const query = `*[_type == "product" && slug.current == "${currentSlug}"][0]`;
           const productData = await client.fetch(query);
+
+          document.title = `${productData.name} | Woode`;
+
+          const metaDesc = document.querySelector('meta[name="description"]');
+          if (metaDesc && productData.shortDescription) {
+            metaDesc.setAttribute("content", productData.shortDescription);
+          }
 
           nextDom.querySelector(".product-page-hero h1").textContent =
             productData.name;
@@ -1749,6 +1757,7 @@ barba.init({
     {
       namespace: "contact",
       beforeEnter() {
+        document.title = "Contact | Woode Luxury Furniture";
         document.body.classList.remove("is-home");
         document.body.classList.add("is-product");
         document.body.style.overflow = "hidden";
@@ -1769,6 +1778,7 @@ barba.init({
     {
       namespace: "page-not-found",
       beforeEnter() {
+        document.title = "Page Not Found | Woode Luxury Furniture";
         document.body.classList.remove("is-home");
         document.body.classList.add("is-product");
         document.body.style.overflow = "hidden";
@@ -1813,11 +1823,15 @@ barba.init({
           const categoryProducts = await client.fetch(query);
 
           const titleEl = nextDom.querySelector(".products-category-title");
+          const formattedCategory = currentCategory
+            .replace(/-/g, " ")
+            .replace(/\b\w/g, (l) => l.toUpperCase());
+
           if (titleEl) {
-            titleEl.textContent = currentCategory
-              .replace(/-/g, " ")
-              .replace(/\b\w/g, (l) => l.toUpperCase());
+            titleEl.textContent = formattedCategory;
           }
+
+          document.title = `${formattedCategory} | Woode Collections`;
 
           const cards = nextDom.querySelectorAll(".product-card");
 
@@ -1864,6 +1878,7 @@ barba.init({
     {
       namespace: "privacy-policy",
       beforeEnter() {
+        document.title = "Privacy Policy | Woode Luxury Furniture";
         document.body.classList.remove("is-home");
         document.body.classList.add("is-product");
         document.body.style.overflow = "hidden";
