@@ -2,9 +2,9 @@ if ("scrollRestoration" in history) {
   history.scrollRestoration = "manual";
 }
 
+import "./style-min.css";
 import { createClient } from "@sanity/client";
 import { createImageUrlBuilder } from "@sanity/image-url";
-import "./style-min.css";
 
 gsap.registerPlugin(
   MorphSVGPlugin,
@@ -29,6 +29,7 @@ let isMenuAnimating = false;
 let activedMenu = false;
 let menuAnimating = false;
 let activeCategory = null;
+let transitionTl = gsap.timeline();
 
 const client = createClient({
   projectId: "1zhhp7qc",
@@ -38,6 +39,8 @@ const client = createClient({
 });
 const builder = createImageUrlBuilder(client);
 const urlFor = (source) => builder.image(source);
+const optimizedUrl = (source, width = 1200, quality = 75) =>
+  urlFor(source).width(width).format("webp").quality(quality).fit("clip").url();
 
 const homeQuery = `*[_type == "home"][0]{
   slogan, heroImages[] { asset, alt }, editTitle, editFirstText,
@@ -117,6 +120,7 @@ function initSmoother(contentEl) {
 async function populateHomeData(container) {
   try {
     const data = await client.fetch(homeQuery);
+    if (!data) return;
 
     const firstEditLink = container.querySelector(".first-container a");
     const firstEditImg = container.querySelector(".the-edit-first-photo");
@@ -127,7 +131,8 @@ async function populateHomeData(container) {
       }
 
       if (firstEditImg && data.editFirstProduct.mainImage) {
-        firstEditImg.src = urlFor(data.editFirstProduct.mainImage).url();
+        firstEditImg.src = optimizedUrl(data.editFirstProduct.mainImage, 900);
+        firstEditImg.loading = "lazy";
       }
     }
     const secondEditLink = container.querySelector(".second-container a");
@@ -139,7 +144,8 @@ async function populateHomeData(container) {
       }
 
       if (secondEditImg && data.editSecondProduct.mainImage) {
-        secondEditImg.src = urlFor(data.editSecondProduct.mainImage).url();
+        secondEditImg.src = optimizedUrl(data.editSecondProduct.mainImage, 900);
+        secondEditImg.loading = "lazy";
       }
     }
     const thirdEditLink = container.querySelector(".third-container a");
@@ -151,7 +157,8 @@ async function populateHomeData(container) {
       }
 
       if (thirdEditImg && data.editThirdProduct.mainImage) {
-        thirdEditImg.src = urlFor(data.editThirdProduct.mainImage).url();
+        thirdEditImg.src = optimizedUrl(data.editThirdProduct.mainImage, 900);
+        thirdEditImg.loading = "lazy";
       }
     }
     const fourthEditLink = container.querySelector(".fourth-container a");
@@ -163,7 +170,8 @@ async function populateHomeData(container) {
       }
 
       if (fourthEditImg && data.editFourthProduct.mainImage) {
-        fourthEditImg.src = urlFor(data.editFourthProduct.mainImage).url();
+        fourthEditImg.src = optimizedUrl(data.editFourthProduct.mainImage, 900);
+        fourthEditImg.loading = "lazy";
       }
     }
 
@@ -176,7 +184,8 @@ async function populateHomeData(container) {
       }
 
       if (fifthEditImg && data.editFifthProduct.mainImage) {
-        fifthEditImg.src = urlFor(data.editFifthProduct.mainImage).url();
+        fifthEditImg.src = optimizedUrl(data.editFifthProduct.mainImage, 900);
+        fifthEditImg.loading = "lazy";
       }
     }
 
@@ -189,7 +198,8 @@ async function populateHomeData(container) {
       }
 
       if (sixthEditImg && data.editSixthProduct.mainImage) {
-        sixthEditImg.src = urlFor(data.editSixthProduct.mainImage).url();
+        sixthEditImg.src = optimizedUrl(data.editSixthProduct.mainImage, 900);
+        sixthEditImg.loading = "lazy";
       }
     }
 
@@ -202,11 +212,13 @@ async function populateHomeData(container) {
       }
 
       if (seventhEditImg && data.editSeventhProduct.mainImage) {
-        seventhEditImg.src = urlFor(data.editSeventhProduct.mainImage).url();
+        seventhEditImg.src = optimizedUrl(
+          data.editSeventhProduct.mainImage,
+          900,
+        );
+        seventhEditImg.loading = "lazy";
       }
     }
-
-    if (!data) return;
 
     const assignText = (selector, dataVal) => {
       const el = container.querySelector(selector);
@@ -221,37 +233,39 @@ async function populateHomeData(container) {
     const bgContainer = container.querySelector("#hero_background");
     if (bgContainer && data.heroImages?.length > 0) {
       bgContainer.innerHTML = "";
-      data.heroImages.forEach((imgData) => {
+      data.heroImages.forEach((imgData, index) => {
         const imgEl = document.createElement("img");
         imgEl.src = urlFor(imgData)
           .width(1920)
           .format("webp")
-          .quality(75)
+          .quality(70)
+          .fit("clip")
           .url();
         imgEl.alt = imgData.alt || "Woode Interior";
-        imgEl.loading = "lazy";
         imgEl.decoding = "async";
+
+        if (index === 0) {
+          imgEl.fetchPriority = "high";
+          imgEl.loading = "eager";
+        } else {
+          imgEl.loading = "lazy";
+        }
+
         bgContainer.appendChild(imgEl);
       });
     }
 
-    const assignImage = (selector, imgData) => {
+    const assignImage = (selector, imgData, width = 900) => {
       const el = container.querySelector(selector);
-      if (el && imgData) el.src = urlFor(imgData).url();
+      if (el && imgData) el.src = optimizedUrl(imgData, width);
     };
 
     assignImage(".the-edit-first-hovered-photo", data.hoverimg1);
-    assignImage(".the-edit-second-photo", data.editSecondImage);
     assignImage(".the-edit-second-hovered-photo", data.hoverimg2);
-    assignImage(".the-edit-third-photo", data.editThirdImage);
     assignImage(".the-edit-third-hovered-photo", data.hoverimg3);
-    assignImage(".the-edit-fourth-photo", data.editFourthImage);
     assignImage(".the-edit-fourth-hovered-photo", data.hoverimg4);
-    assignImage(".the-edit-fifth-photo", data.editFifthImage);
     assignImage(".the-edit-fifth-hovered-photo", data.hoverimg5);
-    assignImage(".the-edit-sixth-photo", data.editSixthImage);
     assignImage(".the-edit-sixth-hovered-photo", data.hoverimg6);
-    assignImage(".the-edit-seventh-photo", data.editSeventhImage);
     assignImage(".the-edit-seventh-hovered-photo", data.hoverimg7);
   } catch (error) {
     console.error("Sanity Error:", error);
@@ -1564,7 +1578,6 @@ function resetHeaderState() {
 }
 
 initGlobalHeader();
-let transitionTl = gsap.timeline();
 
 barba.init({
   sync: false,
@@ -1630,7 +1643,12 @@ barba.init({
 
           const mainPhoto = nextDom.querySelector(".product-main-photo");
           if (productData.highlightImage) {
-            mainPhoto.src = urlFor(productData.highlightImage).url();
+            mainPhoto.src = urlFor(productData.highlightImage)
+              .width(800)
+              .format("webp")
+              .quality(80)
+              .fit("clip")
+              .url();
           } else {
             mainPhoto.src =
               "https://res.cloudinary.com/dabshzrnj/image/upload/v1776100976/Screenshot_2026-03-17_at_16-31-22_black_-_Pesquisa_Google_2_xv6wow.webp";
@@ -1646,7 +1664,12 @@ barba.init({
           photoDivs.forEach((div, index) => {
             if (productData.gallery && productData.gallery[index]) {
               const imgEl = document.createElement("img");
-              imgEl.src = urlFor(productData.gallery[index]).url();
+              imgEl.src = urlFor(productData.gallery[index])
+                .width(800)
+                .format("webp")
+                .quality(80)
+                .fit("clip")
+                .url();
               imgEl.alt = `${productData.name} - Gallery Image ${index + 1}`;
               imgEl.style.width = "100%";
               imgEl.style.height = "100%";
@@ -1697,7 +1720,7 @@ barba.init({
             if (recommendationContainers[index] && prod.mainImage) {
               recommendationContainers[index].innerHTML = `
                 <a href="product-page.html?slug=${prod.slug}" style="display: block; width: 100%; height: 100%; text-decoration: none;">
-                  <img src="${urlFor(prod.mainImage).width(800).format("webp").quality(80).url()}" alt="Recommended Product" style="width: 100%; height: 100%; object-fit: cover;">
+                  <img src="${urlFor(prod.mainImage).width(800).format("webp").quality(80).fit("clip").url()}" alt="Recommended Product" style="width: 100%; height: 100%; object-fit: cover;">
                 </a>
               `;
             }
