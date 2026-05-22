@@ -282,22 +282,75 @@ header a {
 
 .search-tab-container {
   display: flex;
+  flex-direction: column;
   gap: 3rem;
   justify-content: center;
   align-items: center;
 }
 
-.search-tab-container svg {
-  height: 13%;
+.search-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 3rem;
+  height: 50%;
+}
+
+.search-input-container {
+  display: flex;
+  gap: 3rem;
+  align-items: center;
+}
+
+.search-input-container svg {
+  height: 50%;
+  width: 8rem;
   opacity: 0;
 }
 
-.search-tab-container span {
+.search-input-container input {
   color: var(--light-color);
   font-family: var(--destac-font-family);
   font-weight: var(--extra-light-weight-font);
   font-size: var(--fs-search);
   opacity: 0;
+  background-color: transparent;
+  outline: none;
+  border: none;
+}
+
+.search-input-container input::placeholder {
+  color: var(--light-color);
+}
+
+#search_results {
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+  justify-content: start;
+  margin-left: 11rem;
+}
+
+.search-result-info {
+  display: flex;
+  align-items: center;
+  font-size: var(--fs-xxs);
+  font-family: var(--default-font-family);
+}
+
+.search-result-info span {
+  color: var(--light-color);
+}
+
+.search-result-item {
+  padding: 0.3rem;
+  width: 100%;
+  height: 100%;
+}
+
+.search-result-item:focus,
+.search-result-item:hover {
+  outline: none;
+  border: none;
 }
 
 .cart-tab-container {
@@ -358,11 +411,9 @@ header a {
 }
 
 .cart-empty {
-  font-family: var(--destac-font-family);
-  font-weight: var(--extra-light-weight-font);
-  font-size: var(--fs-md);
+  font-family: var(--default-font-family);
+  font-size: var(--fs-base);
   color: var(--light-color);
-  text-transform: uppercase;
 }
 
 #cart_items_list {
@@ -480,13 +531,16 @@ header a {
 .cart-item .cart-item-remove-btn {
   grid-area: remove-button;
   display: flex;
-  justify-content: end;
-  align-items: start;
+  align-self: flex-end;
+  justify-self: end;
+  line-height: 1;
   color: var(--light-color);
   font-size: var(--fs-cart);
   cursor: pointer;
   padding: 0;
-  border: none;
+  margin: 0;
+  height: auto;
+  width: auto;
 }
 
 .cart-item-price {
@@ -496,14 +550,22 @@ header a {
   align-self: flex-end;
 }
 
-.cart-status-container {
-  padding-top: 2rem;
+.cart-info {
   position: absolute;
   display: flex;
+  flex-direction: column;
+  justify-content: start;
   width: 100%;
   height: 27%;
   bottom: 0;
   background-color: var(--dark-color);
+}
+
+.cart-status-container {
+  padding-top: 2rem;
+  display: flex;
+  height: 70%;
+  width: 100%;
 }
 
 .cart-tab-line {
@@ -516,7 +578,6 @@ header a {
 }
 
 .investment-counter {
-  position: relative;
   padding-left: 2rem;
   width: 50%;
   font-family: var(--default-font-family);
@@ -524,7 +585,6 @@ header a {
 }
 
 .pieces-counter {
-  position: relative;
   padding-left: 2rem;
   width: 50%;
   font-family: var(--default-font-family);
@@ -533,8 +593,9 @@ header a {
 
 .cart-tab-container button {
   position: absolute;
-  bottom: 0;
   width: 100%;
+  bottom: 0;
+  height: 30%;
   font-size: var(--fs-md);
   font-weight: var(--extra-light-weight-font);
   padding: 1.7rem 0;
@@ -1429,10 +1490,10 @@ footer span {
   .cart-tab-container {
     grid-template-columns: repeat(2, 1fr);
     grid-template-areas:
-      "title              title "
-      ".                  .     "
-      "line               line  "
-      "investment         pieces";
+      "title      title"
+      "list       list "
+      "list       list "
+      "list       list ";
     width: 100%;
   }
 
@@ -1443,6 +1504,26 @@ footer span {
 
   .cart-tab-container h2 {
     font-size: var(--fs-md);
+  }
+
+  .cart-item {
+    grid-template-columns: 1.3fr 1fr 0.7fr;
+    grid-template-rows: repeat(2, 1fr);
+    grid-template-areas:
+      "item-photo     item-name        remove-button "
+      "item-photo     item-quantity    item-price    ";
+    height: 30%;
+  }
+
+  .cart-status-container {
+    flex-direction: column;
+    padding-bottom: 2rem;
+    justify-content: space-between;
+  }
+
+  .cart-item .cart-item-remove-btn {
+    align-self: flex-start;
+    justify-self: end;
   }
 
   #mobile_menu_link {

@@ -87,8 +87,7 @@ const cart = {
     const cartBadge = document.querySelector("#cart_badge");
 
     if (cartCount) cartCount.textContent = this.count();
-    if (cartTotal)
-      cartTotal.textContent = `$${this.total().toLocaleString()} USD`;
+    if (cartTotal) cartTotal.textContent = `$${this.total().toLocaleString()}`;
     if (!cartList) return;
     cartList.innerHTML = "";
     if (items.length === 0) {
@@ -104,7 +103,7 @@ const cart = {
           <img src="${item.image}" alt="${item.name}">
         </div>
           <span class="cart-item-name">${item.name}</span>
-          <span class="cart-item-price">$${item.price} USD</span>
+          <span class="cart-item-price">$${item.price}</span>
           <div class="cart-item-quantity">
             <button class="qty-btn qty-minus" data-slug="${item.slug}">−</button>
             <span>${item.quantity}</span>
@@ -154,17 +153,26 @@ function initSearch() {
     }
 
     searchDebounce = setTimeout(async () => {
-      searchResults.innerHTML = `<p class="search-loading">Searching...</p>`;
+      searchResults.innerHTML = `<p class="search-loading" style="opacity: 0;">Searching...</p>`;
+      gsap.to(searchResults.querySelector(".search-loading"), {
+        opacity: 1,
+        duration: 0.3,
+      });
+
       try {
         const results = await client.fetch(
-          `*[_type == "product" && name match $query]{
-            name, "slug": slug.current, mainImage, price
+          `*[_type == "product" && name match $query][0...5]{
+            name, "slug": slug.current
           }`,
           { query: query + "*" },
         );
 
         if (results.length === 0) {
-          searchResults.innerHTML = `<p class="search-empty">No results for "${query}".</p>`;
+          searchResults.innerHTML = `<p class="search-empty" style="opacity: 0;">No results for "${query}".</p>`;
+          gsap.to(searchResults.querySelector(".search-empty"), {
+            opacity: 1,
+            duration: 0.3,
+          });
           return;
         }
 
@@ -174,19 +182,93 @@ function initSearch() {
           el.classList.add("search-result-item");
           el.href = `product-page.html?slug=${product.slug}`;
           el.innerHTML = `
-            <img src="${optimizedUrl(product.mainImage, 120)}" alt="${product.name}">
             <div class="search-result-info">
               <span class="search-result-name">${product.name}</span>
-              <span class="search-result-price">$${product.price} USD</span>
             </div>
           `;
           searchResults.appendChild(el);
+
+          const animateIn = () => {
+            gsap.set(el, {
+              backgroundColor: "rgba(255, 255, 255, 0.1)",
+            });
+          };
+
+          const animateOut = () => {
+            gsap.set(el, {
+              backgroundColor: "rgba(255, 255, 255, 0)",
+            });
+          };
+
+          el.addEventListener("mouseenter", animateIn);
+          el.addEventListener("mouseleave", animateOut);
+
+          el.addEventListener("focus", animateIn);
+          el.addEventListener("blur", animateOut);
         });
+
+        gsap.fromTo(
+          searchResults.querySelectorAll(".search-result-item"),
+          { opacity: 0, y: 15 },
+          {
+            opacity: 1,
+            y: 0,
+            duration: 0.4,
+            stagger: 0.05,
+            ease: "power2.out",
+          },
+        );
       } catch (err) {
         console.error("Search error:", err);
       }
     }, 350);
   });
+
+  searchInput.addEventListener("keydown", (e) => {
+    if (e.key === "ArrowDown") {
+      e.preventDefault();
+      const firstResult = searchResults.querySelector(".search-result-item");
+      if (firstResult) firstResult.focus();
+    } else if (e.key === "Enter") {
+      e.preventDefault();
+      const firstResult = searchResults.querySelector(".search-result-item");
+      if (firstResult) firstResult.click();
+    }
+  });
+
+  searchResults.addEventListener("keydown", (e) => {
+    const items = Array.from(
+      searchResults.querySelectorAll(".search-result-item"),
+    );
+    if (!items.length) return;
+
+    const currentIndex = items.indexOf(document.activeElement);
+
+    if (e.key === "ArrowDown") {
+      e.preventDefault();
+      if (currentIndex < items.length - 1) {
+        items[currentIndex + 1].focus();
+      }
+    } else if (e.key === "ArrowUp") {
+      e.preventDefault();
+      if (currentIndex > 0) {
+        items[currentIndex - 1].focus();
+      } else {
+        searchInput.focus();
+      }
+    }
+  });
+}
+
+function clearSearchUI() {
+  const searchInput = document.querySelector("#search_input");
+  const searchResults = document.querySelector("#search_results");
+
+  if (searchInput) searchInput.value = "";
+  if (searchResults) {
+    searchResults.innerHTML = "";
+    clearTimeout(searchDebounce);
+  }
 }
 
 const homeQuery = `*[_type == "home"][0]{
@@ -698,9 +780,7 @@ function initProductPageAnimations(container) {
       ".product-details-photos-container .photo img",
     );
 
-    const productTimers = container.querySelector(
-      ".product-details-photos-container .photo img",
-    );
+    const productTimers = container.querySelectorAll(".product-timer");
 
     const continueCurating = container.querySelectorAll(
       ".recommended-products-product",
@@ -1301,13 +1381,14 @@ function initGlobalHeader() {
       }
 
       const targetItems = targetOverlay.querySelectorAll(
-        ".product-categories h3, .product-categories li, .search-item, .product-categories-images",
+        ".product-categories h3, .product-categories li, .search-item, .product-categories-images, .search-result-item",
       );
 
       if (activeMenuTarget === target) {
         isMenuAnimating = true;
         const tl = gsap.timeline({
           onComplete: () => {
+            if (activeMenuTarget === "#search_tab") clearSearchUI();
             activeMenuTarget = null;
             isMenuAnimating = false;
           },
@@ -1335,6 +1416,7 @@ function initGlobalHeader() {
         isMenuAnimating = true;
 
         if (activeMenuTarget) {
+          if (activeMenuTarget === "#search_tab") clearSearchUI();
           const oldOverlay = document.querySelector(activeMenuTarget);
           const oldItems = oldOverlay.querySelectorAll(
             ".product-categories h3, .product-categories li, .search-item, .product-categories-images",
@@ -1746,6 +1828,8 @@ function resetHeaderState() {
   isMenuAnimating = false;
   activedMenu = false;
   menuAnimating = false;
+
+  clearSearchUI();
 }
 
 initGlobalHeader();
