@@ -2,7 +2,7 @@ if ("scrollRestoration" in history) {
   history.scrollRestoration = "manual";
 }
 
-import "./style-min.css";
+import "./style.css";
 import { createClient } from "@sanity/client";
 import { createImageUrlBuilder } from "@sanity/image-url";
 
@@ -39,8 +39,155 @@ const client = createClient({
 });
 const builder = createImageUrlBuilder(client);
 const urlFor = (source) => builder.image(source);
-const optimizedUrl = (source, width = 1200, quality = 75) =>
-  urlFor(source).width(width).format("webp").quality(quality).fit("clip").url();
+const optimizedUrl = (source, width = 1400, quality = 85) =>
+  urlFor(source).width(width).format("webp").quality(quality).url();
+const cart = {
+  get() {
+    return JSON.parse(localStorage.getItem("woode_cart") || "[]");
+  },
+  save(items) {
+    localStorage.setItem("woode_cart", JSON.stringify(items));
+  },
+  add(product) {
+    const items = this.get();
+    const existing = items.find((i) => i.slug === product.slug);
+    if (existing) {
+      existing.quantity += 1;
+    } else {
+      items.push({ ...product, quantity: 1 });
+    }
+    this.save(items);
+    this.updateUI();
+  },
+  remove(slug) {
+    this.save(this.get().filter((i) => i.slug !== slug));
+    this.updateUI();
+  },
+  updateQuantity(slug, delta) {
+    const items = this.get();
+    const item = items.find((i) => i.slug === slug);
+    if (item) {
+      item.quantity += delta;
+      if (item.quantity <= 0) return this.remove(slug);
+    }
+    this.save(items);
+    this.updateUI();
+  },
+  total() {
+    return this.get().reduce((sum, i) => sum + i.price * i.quantity, 0);
+  },
+  count() {
+    return this.get().reduce((sum, i) => sum + i.quantity, 0);
+  },
+  updateUI() {
+    const items = this.get();
+    const cartList = document.querySelector("#cart_items_list");
+    const cartTotal = document.getElementById("investment_dynamic_counter");
+    const cartCount = document.getElementById("pieces_dynamic_counter");
+    const cartBadge = document.querySelector("#cart_badge");
+
+    if (cartCount) cartCount.textContent = this.count();
+    if (cartTotal)
+      cartTotal.textContent = `$${this.total().toLocaleString()} USD`;
+    if (!cartList) return;
+    cartList.innerHTML = "";
+    if (items.length === 0) {
+      cartList.innerHTML = `<p class="cart-empty">Your bag is empty.</p>`;
+      return;
+    }
+
+    items.forEach((item) => {
+      const el = document.createElement("div");
+      el.classList.add("cart-item");
+      el.innerHTML = `
+        <div class="cart-item-img-container">
+          <img src="${item.image}" alt="${item.name}">
+        </div>
+          <span class="cart-item-name">${item.name}</span>
+          <span class="cart-item-price">$${item.price} USD</span>
+          <div class="cart-item-quantity">
+            <button class="qty-btn qty-minus" data-slug="${item.slug}">−</button>
+            <span>${item.quantity}</span>
+            <button class="qty-btn qty-plus" data-slug="${item.slug}">+</button>
+          </div>
+        <button class="cart-item-remove-btn" data-slug="${item.slug}">×</button>
+      `;
+      cartList.appendChild(el);
+    });
+
+    cartList
+      .querySelectorAll(".qty-minus")
+      .forEach((btn) =>
+        btn.addEventListener("click", () =>
+          cart.updateQuantity(btn.dataset.slug, -1),
+        ),
+      );
+    cartList
+      .querySelectorAll(".qty-plus")
+      .forEach((btn) =>
+        btn.addEventListener("click", () =>
+          cart.updateQuantity(btn.dataset.slug, 1),
+        ),
+      );
+    cartList
+      .querySelectorAll(".cart-item-remove-btn")
+      .forEach((btn) =>
+        btn.addEventListener("click", () => cart.remove(btn.dataset.slug)),
+      );
+  },
+};
+
+let searchDebounce;
+
+function initSearch() {
+  const searchInput = document.querySelector("#search_input");
+  const searchResults = document.querySelector("#search_results");
+  if (!searchInput || !searchResults) return;
+
+  searchInput.addEventListener("input", () => {
+    clearTimeout(searchDebounce);
+    const query = searchInput.value.trim();
+
+    if (query.length < 2) {
+      searchResults.innerHTML = "";
+      return;
+    }
+
+    searchDebounce = setTimeout(async () => {
+      searchResults.innerHTML = `<p class="search-loading">Searching...</p>`;
+      try {
+        const results = await client.fetch(
+          `*[_type == "product" && name match $query]{
+            name, "slug": slug.current, mainImage, price
+          }`,
+          { query: query + "*" },
+        );
+
+        if (results.length === 0) {
+          searchResults.innerHTML = `<p class="search-empty">No results for "${query}".</p>`;
+          return;
+        }
+
+        searchResults.innerHTML = "";
+        results.forEach((product) => {
+          const el = document.createElement("a");
+          el.classList.add("search-result-item");
+          el.href = `product-page.html?slug=${product.slug}`;
+          el.innerHTML = `
+            <img src="${optimizedUrl(product.mainImage, 120)}" alt="${product.name}">
+            <div class="search-result-info">
+              <span class="search-result-name">${product.name}</span>
+              <span class="search-result-price">$${product.price} USD</span>
+            </div>
+          `;
+          searchResults.appendChild(el);
+        });
+      } catch (err) {
+        console.error("Search error:", err);
+      }
+    }, 350);
+  });
+}
 
 const homeQuery = `*[_type == "home"][0]{
   slogan, heroImages[] { asset, alt }, editTitle, editFirstText,
@@ -131,7 +278,11 @@ async function populateHomeData(container) {
       }
 
       if (firstEditImg && data.editFirstProduct.mainImage) {
-        firstEditImg.src = optimizedUrl(data.editFirstProduct.mainImage, 900);
+        firstEditImg.src = optimizedUrl(
+          data.editFirstProduct.mainImage,
+          1800,
+          85,
+        );
         firstEditImg.loading = "lazy";
       }
     }
@@ -144,7 +295,11 @@ async function populateHomeData(container) {
       }
 
       if (secondEditImg && data.editSecondProduct.mainImage) {
-        secondEditImg.src = optimizedUrl(data.editSecondProduct.mainImage, 900);
+        secondEditImg.src = optimizedUrl(
+          data.editSecondProduct.mainImage,
+          1800,
+          85,
+        );
         secondEditImg.loading = "lazy";
       }
     }
@@ -157,7 +312,11 @@ async function populateHomeData(container) {
       }
 
       if (thirdEditImg && data.editThirdProduct.mainImage) {
-        thirdEditImg.src = optimizedUrl(data.editThirdProduct.mainImage, 900);
+        thirdEditImg.src = optimizedUrl(
+          data.editThirdProduct.mainImage,
+          1800,
+          85,
+        );
         thirdEditImg.loading = "lazy";
       }
     }
@@ -170,7 +329,11 @@ async function populateHomeData(container) {
       }
 
       if (fourthEditImg && data.editFourthProduct.mainImage) {
-        fourthEditImg.src = optimizedUrl(data.editFourthProduct.mainImage, 900);
+        fourthEditImg.src = optimizedUrl(
+          data.editFourthProduct.mainImage,
+          1800,
+          85,
+        );
         fourthEditImg.loading = "lazy";
       }
     }
@@ -184,7 +347,11 @@ async function populateHomeData(container) {
       }
 
       if (fifthEditImg && data.editFifthProduct.mainImage) {
-        fifthEditImg.src = optimizedUrl(data.editFifthProduct.mainImage, 900);
+        fifthEditImg.src = optimizedUrl(
+          data.editFifthProduct.mainImage,
+          1800,
+          85,
+        );
         fifthEditImg.loading = "lazy";
       }
     }
@@ -198,7 +365,11 @@ async function populateHomeData(container) {
       }
 
       if (sixthEditImg && data.editSixthProduct.mainImage) {
-        sixthEditImg.src = optimizedUrl(data.editSixthProduct.mainImage, 900);
+        sixthEditImg.src = optimizedUrl(
+          data.editSixthProduct.mainImage,
+          1800,
+          85,
+        );
         sixthEditImg.loading = "lazy";
       }
     }
@@ -214,7 +385,8 @@ async function populateHomeData(container) {
       if (seventhEditImg && data.editSeventhProduct.mainImage) {
         seventhEditImg.src = optimizedUrl(
           data.editSeventhProduct.mainImage,
-          900,
+          1800,
+          85,
         );
         seventhEditImg.loading = "lazy";
       }
@@ -236,10 +408,9 @@ async function populateHomeData(container) {
       data.heroImages.forEach((imgData, index) => {
         const imgEl = document.createElement("img");
         imgEl.src = urlFor(imgData)
-          .width(1920)
+          .width(2560)
           .format("webp")
-          .quality(70)
-          .fit("clip")
+          .quality(85)
           .url();
         imgEl.alt = imgData.alt || "Woode Interior";
         imgEl.decoding = "async";
@@ -255,18 +426,18 @@ async function populateHomeData(container) {
       });
     }
 
-    const assignImage = (selector, imgData, width = 900) => {
+    const assignImage = (selector, imgData, width = 900, quality = 85) => {
       const el = container.querySelector(selector);
-      if (el && imgData) el.src = optimizedUrl(imgData, width);
+      if (el && imgData) el.src = optimizedUrl(imgData, width, quality);
     };
 
-    assignImage(".the-edit-first-hovered-photo", data.hoverimg1);
-    assignImage(".the-edit-second-hovered-photo", data.hoverimg2);
-    assignImage(".the-edit-third-hovered-photo", data.hoverimg3);
-    assignImage(".the-edit-fourth-hovered-photo", data.hoverimg4);
-    assignImage(".the-edit-fifth-hovered-photo", data.hoverimg5);
-    assignImage(".the-edit-sixth-hovered-photo", data.hoverimg6);
-    assignImage(".the-edit-seventh-hovered-photo", data.hoverimg7);
+    assignImage(".the-edit-first-hovered-photo", data.hoverimg1, 1800, 85);
+    assignImage(".the-edit-second-hovered-photo", data.hoverimg2, 1800, 85);
+    assignImage(".the-edit-third-hovered-photo", data.hoverimg3, 1800, 85);
+    assignImage(".the-edit-fourth-hovered-photo", data.hoverimg4, 1800, 85);
+    assignImage(".the-edit-fifth-hovered-photo", data.hoverimg5, 1800, 85);
+    assignImage(".the-edit-sixth-hovered-photo", data.hoverimg6, 1800, 85);
+    assignImage(".the-edit-seventh-hovered-photo", data.hoverimg7, 1800, 85);
   } catch (error) {
     console.error("Sanity Error:", error);
   }
@@ -1023,7 +1194,7 @@ function initGlobalHeader() {
         document.body.style.overflow = "hidden";
 
         const targetItems = targetOverlay.querySelectorAll(
-          "h2, .cart-tab-line, .investment-counter, .pieces-counter, .contact-concierge-btn",
+          "h2, .cart-items-list, .cart-tab-line, .investment-counter, .pieces-counter, .contact-concierge-btn",
         );
 
         const tl = gsap.timeline({
@@ -1578,6 +1749,8 @@ function resetHeaderState() {
 }
 
 initGlobalHeader();
+initSearch();
+cart.updateUI();
 
 barba.init({
   sync: false,
@@ -1632,6 +1805,19 @@ barba.init({
 
           const query = `*[_type == "product" && slug.current == "${currentSlug}"][0]`;
           const productData = await client.fetch(query);
+          const addToCartBtn = nextDom.querySelector(".add-to-cart-btn");
+          if (addToCartBtn) {
+            addToCartBtn.addEventListener("click", () => {
+              cart.add({
+                slug: currentSlug,
+                name: productData.name,
+                price: productData.price,
+                image: productData.highlightImage
+                  ? optimizedUrl(productData.highlightImage, 800)
+                  : "",
+              });
+            });
+          }
 
           document.title = `${productData.name} | Woode`;
 
@@ -1652,10 +1838,9 @@ barba.init({
           const mainPhoto = nextDom.querySelector(".product-main-photo");
           if (productData.highlightImage) {
             mainPhoto.src = urlFor(productData.highlightImage)
-              .width(800)
+              .width(1600)
               .format("webp")
-              .quality(80)
-              .fit("clip")
+              .quality(85)
               .url();
           } else {
             mainPhoto.src =
@@ -1673,10 +1858,9 @@ barba.init({
             if (productData.gallery && productData.gallery[index]) {
               const imgEl = document.createElement("img");
               imgEl.src = urlFor(productData.gallery[index])
-                .width(800)
+                .width(1600)
                 .format("webp")
-                .quality(80)
-                .fit("clip")
+                .quality(85)
                 .url();
               imgEl.alt = `${productData.name} - Gallery Image ${index + 1}`;
               imgEl.style.width = "100%";
@@ -1728,7 +1912,7 @@ barba.init({
             if (recommendationContainers[index] && prod.mainImage) {
               recommendationContainers[index].innerHTML = `
                 <a href="product-page.html?slug=${prod.slug}" style="display: block; width: 100%; height: 100%; text-decoration: none;">
-                  <img src="${urlFor(prod.mainImage).width(800).format("webp").quality(80).fit("clip").url()}" alt="Recommended Product" style="width: 100%; height: 100%; object-fit: cover;">
+                  <img src="${urlFor(prod.mainImage).width(1200).format("webp").quality(85).url()}" alt="Recommended Product" style="width: 100%; height: 100%; object-fit: cover;">
                 </a>
               `;
             }

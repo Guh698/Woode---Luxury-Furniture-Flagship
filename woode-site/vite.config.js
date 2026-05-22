@@ -21,4 +21,14 @@ export default defineConfig({
       clientPort: 443,
     },
   },
+  plugins: [
+    {
+      name: "watch-html",
+      handleHotUpdate({ file, server }) {
+        if (file.endsWith(".html")) {
+          server.ws.send({ type: "full-reload", path: "*" });
+        }
+      },
+    },
+  ],
 });

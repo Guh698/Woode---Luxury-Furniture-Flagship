@@ -516,14 +516,27 @@
           />
         </g>
       </svg>
-      <span class="search-item">Search items from Woode...</span>
+      <input
+        id="search_input"
+        type="text"
+        placeholder="Search items from Woode..."
+        class="search-item"
+      />
+      <div id="search_results"></div>
     </div>
     <div class="cart-tab-container" id="cart_tab">
       <h2>Your selection</h2>
-      <div class="cart-tab-line"></div>
-      <div class="investment-counter">Investment: 0</div>
-      <div class="pieces-counter">Pieces: 0</div>
-      <button class="contact-concierge-btn">Contact Concierge</button>
+      <div class="cart-items-list" id="cart_items_list"></div>
+      <div class="cart-status-container">
+        <div class="cart-tab-line"></div>
+        <div class="investment-counter">
+          Investment: <span id="investment_dynamic_counter">0</span>
+        </div>
+        <div class="pieces-counter">
+          Pieces: <span id="pieces_dynamic_counter">0</span>
+        </div>
+        <button class="contact-concierge-btn">Contact Concierge</button>
+      </div>
     </div>
     <button class="cart-tab-close-btn" id="cart_close_btn">Close</button>
     <div class="cart-tab-overlay"></div>
@@ -849,6 +862,6 @@
     <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/SplitText.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/MorphSVGPlugin.min.js"></script>
     <script src="https://unpkg.com/@barba/core"></script>
-    <script type="module" src="/src/main-min.js"></script>
+    <script type="module" src="/src/main.js"></script>
   </body>
 </html>
