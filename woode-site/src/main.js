@@ -1160,7 +1160,7 @@ function initContactAnimations(container) {
     let containerHeight;
     let wrapFunction;
     let currentY = 0;
-    const speed = /*1.5*/ 0.05;
+    const speed = 1.5;
 
     function updateMetrics() {
       containerHeight = photoContainers[0].clientHeight;
