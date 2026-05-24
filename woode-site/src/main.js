@@ -1843,7 +1843,7 @@ barba.init({
     {
       namespace: "home",
       async beforeEnter(data) {
-        document.title = "Woode | Luxury Home & Decor";
+        document.title = "Woode | Furniture & Interiors";
         window.scrollTo(0, 0);
         gsap.set(["header, footer"], { opacity: 1, pointerEvents: "auto" });
         gsap.set(".header-background", { y: "-100%" });
