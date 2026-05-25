@@ -58,6 +58,7 @@ const cart = {
     }
     this.save(items);
     this.updateUI();
+    openCartTab();
   },
   remove(slug) {
     this.save(this.get().filter((i) => i.slug !== slug));
@@ -1242,6 +1243,106 @@ function killPrivacyPolicy() {
   if (PrivacyPolicyCtx) PrivacyPolicyCtx.revert();
 }
 
+function openCartTab() {
+  if (isMenuAnimating) return;
+
+  const targetOverlay = document.querySelector("#cart_tab");
+  const cartTargetCloseBtn = document.getElementById("cart_close_btn");
+  if (!targetOverlay || !cartTargetCloseBtn) return;
+
+  if (activeMenuTarget) {
+    const oldOverlay = document.querySelector(activeMenuTarget);
+    if (oldOverlay) {
+      const oldItems = oldOverlay.querySelectorAll(
+        ".product-categories h3, .product-categories li, .search-item",
+      );
+      gsap.to(oldItems, {
+        y: -10,
+        opacity: 0,
+        duration: 0.3,
+        stagger: 0.02,
+        ease: "power2.in",
+      });
+      gsap.set(oldOverlay, { y: "-100%", delay: 0.3 });
+    }
+    activeMenuTarget = null;
+  }
+
+  isMenuAnimating = true;
+  document.body.style.overflow = "hidden";
+
+  const targetItems = targetOverlay.querySelectorAll(
+    "h2, .cart-items-list, .cart-tab-line, .investment-counter, .pieces-counter, .contact-concierge-btn",
+  );
+
+  gsap.set(targetItems, { opacity: 0, y: 15 });
+
+  const tl = gsap.timeline({
+    onComplete: () => {
+      isMenuAnimating = false;
+    },
+  });
+
+  tl.to(targetOverlay, { x: "0%", duration: 0.8, ease: "expo.inOut" })
+    .to(
+      [targetItems, cartTargetCloseBtn],
+      {
+        opacity: 1,
+        y: 0,
+        pointerEvents: "auto",
+        duration: 0.6,
+        stagger: 0.04,
+        ease: "power3.out",
+      },
+      "-=0.3",
+    )
+    .to(
+      ".cart-tab-overlay",
+      { opacity: 1, pointerEvents: "auto", duration: 0.8, ease: "expo.inOut" },
+      0,
+    )
+    .to(
+      ".categories-tab-overlay",
+      { opacity: 0, pointerEvents: "none", duration: 0.8, ease: "expo.inOut" },
+      0,
+    );
+
+  cartTargetCloseBtn.addEventListener(
+    "click",
+    () => {
+      document.body.style.overflow = "";
+      const closeTl = gsap.timeline({
+        onComplete: () => {
+          activeMenuTarget = null;
+          isMenuAnimating = false;
+        },
+      });
+
+      closeTl
+        .to([cartTargetCloseBtn, targetItems], {
+          y: -10,
+          opacity: 0,
+          duration: 0.4,
+          stagger: -0.02,
+          pointerEvents: "none",
+          ease: "power2.in",
+        })
+        .to(targetOverlay, { x: "100%", duration: 0.8, ease: "expo.inOut" })
+        .to(
+          ".cart-tab-overlay",
+          {
+            opacity: 0,
+            pointerEvents: "none",
+            duration: 0.8,
+            ease: "expo.inOut",
+          },
+          0,
+        );
+    },
+    { once: true },
+  );
+}
+
 function initGlobalHeader() {
   const headerLinks = document.querySelectorAll(".header-link");
   const livingLink = document.getElementById("living_link");
@@ -1270,113 +1371,7 @@ function initGlobalHeader() {
       const targetOverlay = document.querySelector(target);
 
       if (target === "#cart_tab") {
-        isMenuAnimating = true;
-        document.body.style.overflow = "hidden";
-
-        const targetItems = targetOverlay.querySelectorAll(
-          "h2, .cart-items-list, .cart-tab-line, .investment-counter, .pieces-counter, .contact-concierge-btn",
-        );
-
-        const tl = gsap.timeline({
-          onComplete: () => {
-            isMenuAnimating = false;
-          },
-        });
-
-        if (activeMenuTarget) {
-          const oldOverlay = document.querySelector(activeMenuTarget);
-          const oldItems = oldOverlay.querySelectorAll(
-            ".product-categories h3, .product-categories li, .search-item",
-          );
-
-          tl.to(oldItems, {
-            y: -10,
-            opacity: 0,
-            duration: 0.3,
-            stagger: 0.02,
-            ease: "power2.in",
-          }).set(oldOverlay, { y: "-100%" });
-
-          activeMenuTarget = null;
-        }
-
-        gsap.set(targetItems, { opacity: 0, y: 15 });
-
-        tl.to(
-          targetOverlay,
-          { x: "0%", duration: 0.8, ease: "expo.inOut" },
-          activeMenuTarget ? "<0.1" : undefined,
-        )
-          .to(
-            [targetItems, cartTargetCloseBtn],
-            {
-              opacity: 1,
-              y: 0,
-              pointerEvents: "auto",
-              duration: 0.6,
-              stagger: 0.04,
-              ease: "power3.out",
-            },
-            "-=0.3",
-          )
-          .to(
-            ".cart-tab-overlay",
-            {
-              opacity: 1,
-              pointerEvents: "auto",
-              duration: 0.8,
-              ease: "expo.inOut",
-            },
-            0,
-          )
-          .to(
-            ".categories-tab-overlay",
-            {
-              opacity: 0,
-              pointerEvents: "none",
-              duration: 0.8,
-              ease: "expo.inOut",
-            },
-            0,
-          );
-
-        cartTargetCloseBtn.addEventListener(
-          "click",
-          () => {
-            document.body.style.overflow = "";
-            const tl = gsap.timeline({
-              onComplete: () => {
-                activeMenuTarget = null;
-                isMenuAnimating = false;
-              },
-            });
-
-            tl.to([cartTargetCloseBtn, targetItems], {
-              y: -10,
-              opacity: 0,
-              duration: 0.4,
-              stagger: -0.02,
-              pointerEvents: "none",
-              ease: "power2.in",
-            })
-              .to(targetOverlay, {
-                x: "100%",
-                duration: 0.8,
-                ease: "expo.inOut",
-              })
-              .to(
-                ".cart-tab-overlay",
-                {
-                  opacity: 0,
-                  pointerEvents: "none",
-                  duration: 0.8,
-                  ease: "expo.inOut",
-                },
-                0,
-              );
-          },
-          { once: true },
-        );
+        openCartTab();
         return;
       }
 
