@@ -1687,6 +1687,8 @@ function initGlobalButtons(container) {
       const btnMessage = btn.querySelector(".button-overlay-message");
       const btnDefaultMessage = btn.querySelector(".button-default-message");
 
+      if (!btnOverlay || !btnMessage || !btnDefaultMessage) return;
+
       const splitMessage = new SplitText(btnMessage, { type: "words, chars" });
       const splitDefaultMessage = new SplitText(btnDefaultMessage, {
         type: "words, chars",
