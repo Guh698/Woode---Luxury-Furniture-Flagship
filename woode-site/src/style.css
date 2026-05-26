@@ -418,7 +418,7 @@ header a {
 }
 
 #cart_items_list {
-  position: absolute;
+  position: relative;
   display: flex;
   flex-direction: column;
   gap: 2rem;
